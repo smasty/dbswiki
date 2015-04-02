@@ -1,7 +1,4 @@
-#
-# WARNING: it is CRITICAL that this file & directory are NOT accessible directly via a web browser!
-# http://nette.org/security-warning
-#
+
 parameters:
 
 
@@ -20,6 +17,8 @@ session:
 
 
 services:
-	- App\Model\UserManager
+	- App\Model\AuthorManager
 	- App\Forms\SignFormFactory
+	authenticator: App\Model\Authenticator
 	router: App\RouterFactory::createRouter
+

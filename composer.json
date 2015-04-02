@@ -16,7 +16,9 @@
 	],
 	"require": {
 		"php": ">= 5.3.7",
-		"nette/nette": "~2.3"
+		"nette/nette": "~2.3",
+		"kdyby/bootstrap-form-renderer": "@dev",
+		"michelf/php-markdown": "1.5.0"
 	},
 	"require-dev": {
 		"nette/tester": "~1.3"

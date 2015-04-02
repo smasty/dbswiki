@@ -8,21 +8,65 @@
 <head>
 	<meta charset="utf-8">
 
-	<title>{ifset title}{include title|striptags} | {/ifset}Nette Sandbox</title>
+	<title>{block title|striptags}DBS Wiki{/block}</title>
 
+	<link rel="stylesheet" href="{$basePath}/css/bootstrap.min.css">
 	<link rel="stylesheet" href="{$basePath}/css/style.css">
-	<link rel="shortcut icon" href="{$basePath}/favicon.ico">
 	{block head}{/block}
 </head>
 
 <body>
-	<div n:foreach="$flashes as $flash" n:class="flash, $flash->type">{$flash->message}</div>
+	<div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="navbar-inner">
+            <div class="container-fluid">
+                <a class="brand" n:href="Homepage:">DBS Wiki</a>
+                <ul class="nav">
+                    <li><a n:href="Homepage:">Prehľad bodov</a></li>
+                    <li><a n:href="Homepage:">Upraviť body</a></li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                          Administrácia
+                          <b class="caret"></b>
+                        </a>
+                        <ul class="dropdown-menu">
+                          <li><a n:href="Homepage:">Kvóta</a></li>
+                          <li><a n:href="Homepage:">Birmovanci</a></li>
+                          <li><a n:href="Homepage:">Animátori</a></li>
+                        </ul>
+                      </li>
+                </ul>
+                <ul class="nav pull-right" n:if="$user->loggedIn">
+                    <li class="navbar-text">Welcome, {ucfirst($user->identity->name)}!</li>
+                    <li><a n:href="Sign:out">Logout</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
 
-	{include content}
+    <div class="container">
+        <div class="row" n:if="!empty($flashes)">
+            <div class="span12">
+                <div n:foreach="$flashes as $flash" class="alert alert-{$flash->type}">{$flash->message}</div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="span12">
+                {include #content}
+            </div>
+        </div>
+
+    </div>
+    <hr>
+
+    <footer>
+        <p>Created by <a href="http://smasty.net">Smasty</a>.</p>
+    </footer>
+
 
 	{block scripts}
 	<script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
-	<script src="//nette.github.io/resources/js/netteForms.min.js"></script>
+	<script src="{$basePath}/js/bootstrap.min.js"></script>
 	<script src="{$basePath}/js/main.js"></script>
 	{/block}
 </body>
