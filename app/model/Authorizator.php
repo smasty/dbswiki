@@ -1,30 +1,29 @@
 <?php
 
-use Nette\Security,
-    Nette\Utils\Strings;
+namespace App\Model;
+
+use Nette\Security;
 
 
 /**
  * Users authorizator.
  */
-class Authorizator extends Nette\Security\Permission
-{
-    public function __construct()
-    {
+class Authorizator extends Security\Permission {
+
+    public function __construct(){
         $this->addRole('guest');
-        $this->addRole('user');
+        $this->addRole('user', 'guest');
         $this->addRole('admin');
 
-        /*$this->addResource('Points');
-        $this->addResource('Edit');
-        $this->addResource('Admin');
+        $this->addResource('User');
 
-        $this->allow('guest', 'Points');
-
-        $this->allow('animator', 'Points');
-        $this->allow('animator', 'Edit');*/
+        $this->allow('guest', 'User', ['login', 'register']);
+        $this->allow('user', 'User', 'logout');
+        $this->deny('user', 'User', 'register');
 
         $this->allow('admin');
+
+        // TODO user management - list all + edit/delete
     }
 
 }

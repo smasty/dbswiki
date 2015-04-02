@@ -21,23 +21,27 @@
             <div class="container-fluid">
                 <a class="brand" n:href="Homepage:">DBS Wiki</a>
                 <ul class="nav">
-                    <li><a n:href="Homepage:">Prehľad bodov</a></li>
-                    <li><a n:href="Homepage:">Upraviť body</a></li>
-                    <li class="dropdown">
+                    <!--<li><a n:href="Homepage:">Prehľad bodov</a></li>-->
+                    <li class="dropdown" n:if="$user->isAllowed(User)">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                          Administrácia
+                          Users
                           <b class="caret"></b>
                         </a>
                         <ul class="dropdown-menu">
-                          <li><a n:href="Homepage:">Kvóta</a></li>
-                          <li><a n:href="Homepage:">Birmovanci</a></li>
-                          <li><a n:href="Homepage:">Animátori</a></li>
+                          <li><a n:href="User:manage"><i class="icon-th-list"></i> Manage users</a></li>
+                          <li><a n:href="User:create"><i class="icon-plus"></i> Create new user</a></li>
                         </ul>
                       </li>
                 </ul>
-                <ul class="nav pull-right" n:if="$user->loggedIn">
+                <ul class="nav pull-right">
+                {if $user->loggedIn}
                     <li class="navbar-text">Welcome, {ucfirst($user->identity->name)}!</li>
-                    <li><a n:href="Sign:out">Logout</a></li>
+                    <li><a n:href="User:logout">Logout</a></li>
+                {else}
+                    <li class="navbar-text">Welcome, stranger.</li>
+                    <li><a n:href="User:login">Log in</a></li>
+                    <li><a n:href="User:register">Register</a></li>
+                {/if}
                 </ul>
             </div>
         </div>

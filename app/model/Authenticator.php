@@ -4,6 +4,7 @@ namespace App\Model;
 
 use Nette;
 use Nette\Security;
+use Nette\Utils\Strings;
 
 
 /**
@@ -15,17 +16,15 @@ class Authenticator extends Nette\Object implements Security\IAuthenticator
 
 
 
-	public function __construct(AuthorManager $user)
-	{
+	public function __construct(AuthorManager $user){
 		$this->model = $user;
 	}
 
 
-	public function authenticate(array $credentials)
-	{
+	public function authenticate(array $credentials){
 		list($userId, $password) = $credentials;
 
-		$pswd = AuthorModel::hash($password);
+		$pswd = static::hash($password);
         $row = $this->model->getByName($userId);
 
         if(!$row){
@@ -36,11 +35,18 @@ class Authenticator extends Nette\Object implements Security\IAuthenticator
             throw new Security\AuthenticationException('Login credentials invalid.', self::INVALID_CREDENTIAL);
         }
 
-		return new Security\Identity($row->id, $row->role, (array) $row);
+        $array = (array) $row;
+        unset($array['password']);
+		return new Security\Identity($row->id, $row->role, $array);
 
 	}
 
 
-
+    public static function hash($password){
+        if ($password === Strings::upper($password)){
+            $password = Strings::lower($password);
+        }
+        return md5($password);
+    }
 
 }
