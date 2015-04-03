@@ -13,14 +13,14 @@ class AuthorManager extends BaseManager {
      * @return bool|Nette\Database\Row
      */
     public function find($id){
-        return $this->db->query("SELECT * FROM author WHERE id = ?", $id)->fetch();
+        return $this->db->fetch("SELECT * FROM author WHERE id = ?", $id);
     }
 
     /**
      * @return bool|Nette\Database\Row
      */
     public function getByName($name){
-        return $this->db->query("SELECT * FROM author WHERE name = ?", $name)->fetch();
+        return $this->db->fetch("SELECT * FROM author WHERE name = ?", $name);
     }
 
 
@@ -28,7 +28,7 @@ class AuthorManager extends BaseManager {
      * @return Nette\Database\ResultSet
      */
     public function getAll(){
-        return $this->db->query("SELECT * FROM author");
+        return $this->db->query("SELECT * FROM author ORDER BY name");
     }
 
 

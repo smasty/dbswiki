@@ -1,0 +1,14 @@
+<div class="btn-group pull-right">
+    <a n:href="show, $presenter->getParameter('id')" class="btn">
+            <i class="icon-book"></i> Read
+    </a>
+    <a n:href="history, $presenter->getParameter('id')" class="btn">
+            <i class="icon-refresh"></i> View history
+    </a>
+    <a n:href="edit, $presenter->getParameter('id')" class="btn">
+        <i class="icon-pencil"></i> Edit
+    </a>
+    <a n:href="delete, $presenter->getParameter('id')" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete article {$article->title} and all it\'s revisions?')">
+            <i class="icon-white icon-remove"></i> Delete
+        </a>
+</div>

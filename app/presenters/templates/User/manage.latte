@@ -12,6 +12,7 @@
             <th>Name</th>
             <th>E-mail</th>
             <th>Role</th>
+            <th>Date joined</th>
             <th>Actions</th>
         </tr>
     </thead>
@@ -24,9 +25,10 @@
             <td>
                 <a href="mailto:{$row->mail}">{$row->mail}</a>
             </td>
-            <td>{$row->role}</td>
+            <td>{ucfirst($row->role)}</td>
+            <td>{$row->joined|date:'M j, Y, H:i'}</td>
             <td>
-                <a class="btn" n:href="User:edit, $row->id"><i class="icon-edit"></i> Edit</a>
+                <a class="btn" n:href="User:edit, $row->id"><i class="icon-pencil"></i> Edit</a>
                 <a class="btn btn-danger" n:href="User:delete, $row->id" onclick="return confirm('Are you sure you want to delete user {$row->name}?')"><i class="icon-remove icon-white"></i> Delete</a>
             </td>
         </tr>

@@ -5,11 +5,12 @@ footer{text-align: center;font-size: .85em;}
 
 ul.error{border:1px solid #eed3d7;border-radius: 4px;color:#b94a48;padding:8px 35px 8px 14px;text-shadow: rgba(255, 255, 255, 0.506) 0px 1px 0px;background: #F2DEDE;list-style: none;margin: 1em 0;}
 
-div.login{width:300px;margin:0 auto;}
-div.login table td{padding:0 10px;}
-
-
 /* NETTE-specific styles */
 #ajax-spinner {margin: 15px 0 0 15px;padding: 13px;background: white url('../img/spinner.gif') no-repeat 50% 50%;font-size: 0;z-index: 123456;display: none;}
 div.flash{color: black;background: #FFF9D7;border: 1px solid #E2C822;padding: 1em;margin: 1em 0;}
 a[href^="#error:"] {background: red;color: white;}
+
+
+/* CONTENT STYLING */
+.article-content{clear:both}
+table.table tr.active td, table.table tr.active th{background:#cfe !important;}

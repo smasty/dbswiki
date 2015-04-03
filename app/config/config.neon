@@ -18,6 +18,9 @@ session:
 
 services:
 	- App\Model\AuthorManager
+	- App\Model\ArticleManager
+	- App\Model\CategoryManager
+
 	authenticator: App\Model\Authenticator
 	authorizator: App\Model\Authorizator
 	router: App\RouterFactory::createRouter

@@ -1,0 +1,19 @@
+    {block content}
+
+{include "@menu.latte"}
+
+<h1 n:block=title>
+    {ifset $revision}
+        <a n:href="show, $article->id" title="Go to the latest revision">{$article->title}</a>
+        <small>
+            Revision from {$revision->created|date:'M j, Y, H:i'}
+            by <a n:href="Homepage">{ucfirst($revision->author_name)}</a>.
+        </small>
+    {else}
+        {$article->title}
+    {/ifset}
+    </h1>
+
+<div class="article-content">
+    {!Michelf\Markdown::defaultTransform($article->body)}
+</div>

@@ -16,14 +16,16 @@ class Authorizator extends Security\Permission {
         $this->addRole('admin');
 
         $this->addResource('User');
-
         $this->allow('guest', 'User', ['login', 'register']);
         $this->allow('user', 'User', 'logout');
         $this->deny('user', 'User', 'register');
 
+        $this->addResource('Article');
+        $this->allow('guest', 'Article', 'show');
+        $this->allow('user', 'Article', ['edit', 'create']);
+
         $this->allow('admin');
 
-        // TODO user management - list all + edit/delete
     }
 
 }
