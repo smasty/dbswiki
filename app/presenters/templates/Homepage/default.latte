@@ -1,6 +1,34 @@
-{* This is the welcome page, you can delete it *}
+    {block content}
 
-{block content}
-<h1 n:block=title>Congratulations!</h1>
 
-<p>It's working!</p>
+<h1 n:block=title>
+    Articles
+</h1>
+
+
+<table class="table table-bordered table-striped table-hover">
+    <thead>
+        <tr>
+            <th>Article</th>
+            <th>Date created</th>
+            <th>Category</th>
+            <th>Tags</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr n:foreach="$articles as $a">
+            <td>
+                <a n:href="Article:show, $a->id">{$a->title}</a>
+            </td>
+            <td>
+                {$a->created|date:'M j, Y, H:i:s'}
+            </td>
+            <td>
+                <a n:href="Homepage:">{$a->cname}</a>
+            </td>
+            <td>
+                {!$tags[$a->id] ?: "<i>&ndash; none &ndash;</i>"}
+            </td>
+        </tr>
+    </tbody>
+</table>

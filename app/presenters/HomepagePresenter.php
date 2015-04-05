@@ -9,12 +9,19 @@ use Nette,
 /**
  * Homepage presenter.
  */
-class HomepagePresenter extends BasePresenter
-{
+class HomepagePresenter extends BasePresenter{
 
-	public function renderDefault()
-	{
-		$this->template->anyVariable = 'any value';
+    /**
+     * @var Model\ArticleManager
+     * @inject
+     */
+    public $articleManager;
+
+	public function renderDefault()	{
+
+        
+		$this->template->articles = $this->articleManager->getAll();
+		$this->template->tags = $this->articleManager->getTagsForArticles();
 	}
 
 }

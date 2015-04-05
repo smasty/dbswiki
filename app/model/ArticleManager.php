@@ -8,6 +8,18 @@ use Nette\Database\SqlLiteral;
 
 class ArticleManager extends BaseManager {
 
+
+    public function getAll($limit = NULL, $offset = NULL){
+        return $this->db->query(
+            "SELECT a.id, a.title, a.created, c.title AS cname, c.id AS cid FROM article a ".
+            "LEFT JOIN revision r ON a.revision_id = r.id ".
+            "LEFT JOIN category c ON a.category_id = c.id ".
+            "ORDER BY a.title ASC ".
+            ($limit !== NULL ? ("LIMIT $limit" . ($offset !== NULL ? " OFFSET $offset" : "")) : "")
+        );
+    }
+
+
     public function find($id){
         $row = $this->db->fetch(
             "SELECT a.id, a.title, a.created, r.body, c.title AS category_name, c.id AS category_id, a.revision_id FROM article a ".
@@ -114,6 +126,8 @@ class ArticleManager extends BaseManager {
         $this->db->beginTransaction();
 
         try{
+            $this->db->query("DELETE FROM revision_tag WHERE revision_id IN (SELECT id FROM revision WHERE article_id = ?)", $id);
+            $this->db->query("UPDATE article SET revision_id = NULL WHERE id = ?", $id);
             $this->db->query("DELETE FROM revision WHERE article_id = ?", $id);
             $this->db->query("DELETE FROM article WHERE id = ?", $id);
         } catch(\Exception $e){
@@ -149,12 +163,21 @@ class ArticleManager extends BaseManager {
     }
 
 
+    public function getTagsForArticles(){
+        return $this->db->fetchPairs(
+            "SELECT a.id, string_agg(t.title, ', ') AS tags FROM article a ".
+            "LEFT JOIN revision_tag rt ON a.revision_id = rt.revision_id ".
+            "LEFT JOIN tag t ON rt.tag_id = t.id GROUP BY a.id"
+        );
+    }
+
+
     public function getTagsForArticleRevisions($articleId){
         return $this->db->fetchPairs(
             "SELECT rt.revision_id AS id, string_agg(t.title, ', ') AS tags FROM revision_tag rt ".
             "LEFT JOIN tag t ON t.id = rt.tag_id ".
             "LEFT JOIN revision r ON r.id = rt.revision_id ".
-            "WHERE r.article_id = ? GROUP by rt.revision_id", $articleId);
+            "WHERE r.article_id = ? GROUP BY rt.revision_id", $articleId);
     }
 
 

@@ -29,7 +29,7 @@
             <td>{$row->joined|date:'M j, Y, H:i'}</td>
             <td>
                 <a class="btn" n:href="User:edit, $row->id"><i class="icon-pencil"></i> Edit</a>
-                <a class="btn btn-danger" n:href="User:delete, $row->id" onclick="return confirm('Are you sure you want to delete user {$row->name}?')"><i class="icon-remove icon-white"></i> Delete</a>
+                <a class="btn btn-danger" n:href="User:delete, $row->id" onclick="return confirm('Are you sure you want to delete user {$row->name}? All his revisions will be assigned to you.')"><i class="icon-remove icon-white"></i> Delete</a>
             </td>
         </tr>
 

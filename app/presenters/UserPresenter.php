@@ -223,8 +223,8 @@ class UserPresenter extends BasePresenter {
 
 
     public function actionDelete($id){
-        if($this->authorManager->delete($id)){
-            $this->flashMessage("User #$id was deleted.");
+        if($this->authorManager->delete($id, $this->user->id)){
+            $this->flashMessage("User #$id was deleted. All his posts were assigned to you.");
             $this->redirect("manage");
         } else{
             $this->flashMessage("User #$id could not be deleted.", 'error');

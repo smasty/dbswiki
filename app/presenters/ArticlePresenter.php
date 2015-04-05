@@ -113,7 +113,6 @@ class ArticlePresenter extends BasePresenter {
         $this['articleForm']->onSuccess[] = array($this, 'editSucceeded');
     }
 
-    // TODO reassgin revision if author deleted
     // TODO show article meta - category, tags
     // TODO listings for category, tag and author + links, group by...
     // TODO statistics

@@ -67,10 +67,12 @@ class AuthorManager extends BaseManager {
     }
 
 
-    public function delete($id){
+    public function delete($id, $newId){
         $this->db->beginTransaction();
         try{
+            $this->db->query("UPDATE revision SET author_id = ? WHERE author_id = ?", $newId, $id);
             $this->db->query("DELETE FROM author WHERE id = ?", $id);
+
         } catch(Exception $e){
             $this->db->rollBack();
             return false;
