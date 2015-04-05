@@ -5,6 +5,9 @@
     Articles
 </h1>
 
+<p n:if="$user->isAllowed(Article, create)">
+<a n:href="Article:create" class="btn btn-success"><i class="icon-white icon-plus"></i> Add article</a>
+</p>
 
 <table class="table table-bordered table-striped table-hover">
     <thead>
@@ -24,7 +27,11 @@
                 {$a->created|date:'M j, Y, H:i:s'}
             </td>
             <td>
+                {if $a->cid}
                 <a n:href="Homepage:">{$a->cname}</a>
+                {else}
+                    <i>&ndash; none &ndash;</i>
+                {/if}
             </td>
             <td>
                 {!$tags[$a->id] ?: "<i>&ndash; none &ndash;</i>"}
@@ -32,3 +39,5 @@
         </tr>
     </tbody>
 </table>
+
+{control vp}

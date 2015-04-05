@@ -2,8 +2,8 @@
 
 namespace App\Presenters;
 
-use Nette,
-	App\Model;
+use App\Model;
+use Nette;
 
 
 /**
@@ -17,11 +17,26 @@ class HomepagePresenter extends BasePresenter{
      */
     public $articleManager;
 
-	public function renderDefault()	{
+    /**
+     * @var Model\CategoryManager
+     * @inject
+     */
+    public $categoryManager;
 
-        
-		$this->template->articles = $this->articleManager->getAll();
+	public function actionDefault()	{
+
+        $vp = new \VisualPaginator($this, 'vp');
+        $vp->paginator->itemCount = $this->articleManager->getCount();
+        $vp->paginator->itemsPerPage = 10;
+
+		$this->template->articles = $this->articleManager
+            ->getAll($vp->paginator->itemsPerPage, $vp->paginator->offset);
 		$this->template->tags = $this->articleManager->getTagsForArticles();
 	}
+
+
+    public function renderCategories() {
+        $this->template->categories = $this->categoryManager->getCategories();
+    }
 
 }

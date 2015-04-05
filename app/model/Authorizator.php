@@ -15,6 +15,9 @@ class Authorizator extends Security\Permission {
         $this->addRole('user', 'guest');
         $this->addRole('admin');
 
+        $this->addResource('Homepage');
+        $this->allow('guest', 'Homepage');
+
         $this->addResource('User');
         $this->allow('guest', 'User', ['login', 'register']);
         $this->allow('user', 'User', 'logout');
@@ -23,6 +26,10 @@ class Authorizator extends Security\Permission {
         $this->addResource('Article');
         $this->allow('guest', 'Article', ['show', 'history']);
         $this->allow('user', 'Article', ['edit', 'create', 'revert']);
+
+        $this->addResource('Category');
+        $this->allow('guest', 'Category', ['show']);
+        $this->allow('user', 'Category', ['edit', 'delete', 'create']);
 
         $this->allow('admin');
 

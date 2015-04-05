@@ -44,7 +44,7 @@ class Article extends Nette\Object {
     }
 
     public function getCategory() {
-        return $this->row->category_name;
+        return $this->row->cname;
     }
 
     public function getCategoryId() {

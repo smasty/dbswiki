@@ -2,7 +2,7 @@
 <h1 n:block=title>Manage users
 </h1>
 
-<p><a n:href="User:create" class="btn btn-success"><i class="icon-plus icon-white"></i> Create new</a></p>
+<p><a n:href="User:create" class="btn btn-success"><i class="icon-plus icon-white"></i> Add user</a></p>
 
 <table class="table table-striped table-bordered table-hover">
 
@@ -29,7 +29,9 @@
             <td>{$row->joined|date:'M j, Y, H:i'}</td>
             <td>
                 <a class="btn" n:href="User:edit, $row->id"><i class="icon-pencil"></i> Edit</a>
-                <a class="btn btn-danger" n:href="User:delete, $row->id" onclick="return confirm('Are you sure you want to delete user {$row->name}? All his revisions will be assigned to you.')"><i class="icon-remove icon-white"></i> Delete</a>
+                <a class="btn btn-danger" n:href="User:delete, $row->id" onclick="return confirm('Are you sure you want to delete user {$row->name}? All his revisions will be assigned to you.')">
+                    <i class="icon-remove icon-white"></i> Delete
+                </a>
             </td>
         </tr>
 

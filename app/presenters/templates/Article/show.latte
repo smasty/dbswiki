@@ -12,7 +12,16 @@
     {else}
         {$article->title}
     {/ifset}
-    </h1>
+</h1>
+<p>
+    Category: <a href="Homepage:">{$article->category}</a><br>
+    Tags:
+    {foreach $article->tags as $id => $tag}
+        <a n:href="Homepage:" class="badge badge-success">{$tag}</a>
+    {/foreach}
+</p>
+
+<hr>
 
 <div class="article-content">
     {!Michelf\Markdown::defaultTransform($article->body)}

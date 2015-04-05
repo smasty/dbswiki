@@ -60,7 +60,7 @@ class ArticlePresenter extends BasePresenter {
         $form->addTextArea('body', 'Body (Markdown):', 100, 15)
              ->setRequired('Please enter the body.')->setAttribute('class', 'input-block-level');
 
-        $form->addSelect('category', 'Category:', $this->categoryManager->getAllCategories())
+        $form->addSelect('category', 'Category:', $this->categoryManager->getCategoriesPairs())
              ->setPrompt('-- Select --');
 
         $form->addText('tags', 'Tags (comma-separated):')->setAttribute('class', 'input-xxlarge');
@@ -113,10 +113,9 @@ class ArticlePresenter extends BasePresenter {
         $this['articleForm']->onSuccess[] = array($this, 'editSucceeded');
     }
 
-    // TODO show article meta - category, tags
     // TODO listings for category, tag and author + links, group by...
+    // TODO media
     // TODO statistics
-    // TODO edit own user
 
     public function editSucceeded($form, $values){
 
@@ -157,14 +156,18 @@ class ArticlePresenter extends BasePresenter {
 
 
 
-    public function renderHistory($id){
+    public function actionHistory($id){
         $article = $this->articleManager->find($id);
         if($article === false){
             $this->flashMessage("Article with ID $id does not exist.");
             $this->redirect("Homepage:");
         }
+        $vp = new \VisualPaginator($this, 'vp');
+        $vp->paginator->itemCount = $this->articleManager->getRevisionCount($id);
+        $vp->paginator->itemsPerPage = 10;
+
         $this->template->article = $article;
-        $this->template->revisions = $this->articleManager->getRevisions($id);
+        $this->template->revisions = $this->articleManager->getRevisions($id, $vp->paginator->itemsPerPage, $vp->paginator->offset);
         $this->template->tags = $this->articleManager->getTagsForArticleRevisions($id);
     }
 

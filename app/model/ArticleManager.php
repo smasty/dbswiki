@@ -20,9 +20,14 @@ class ArticleManager extends BaseManager {
     }
 
 
+    public function getCount(){
+        return $this->db->fetchField("SELECT COUNT(*) FROM article");
+    }
+
+
     public function find($id){
         $row = $this->db->fetch(
-            "SELECT a.id, a.title, a.created, r.body, c.title AS category_name, c.id AS category_id, a.revision_id FROM article a ".
+            "SELECT a.id, a.title, a.created, r.body, c.title AS cname, c.id AS cid, a.revision_id FROM article a ".
             "LEFT JOIN revision r ON a.revision_id = r.id ".
             "LEFT JOIN category c ON a.category_id = c.id ".
             "WHERE (a.id = ?)", $id
@@ -46,13 +51,17 @@ class ArticleManager extends BaseManager {
     }
 
 
-    public function getRevisions($id){
+    public function getRevisions($id, $limit, $offset){
         return $this->db->query(
             "SELECT r.*, a.name AS author_name FROM revision r ".
             "LEFT JOIN author a ON a.id = r.author_id ".
-            "WHERE r.article_id = ? ORDER BY r.created DESC", $id
+            "WHERE r.article_id = ? ORDER BY r.created DESC LIMIT ? OFFSET ?", $id, $limit, $offset
         );
 
+    }
+
+    public function getRevisionCount($id){
+        return $this->db->fetchField("SELECT COUNT(*) FROM revision WHERE article_id = ?", $id);
     }
 
 

@@ -31,7 +31,7 @@
                 <a n:href="Homepage:">{ucfirst($rev->author_name)}</a>
             </td>
             <td>
-                {$tags[$rev->id]}
+                {isset($tags[$rev->id]) ? $tags[$rev->id]}
             </td>
             <td>
                 {$rev->log|nl2br}
@@ -53,3 +53,5 @@
         </tr>
     </tbody>
 </table>
+
+{control vp}
