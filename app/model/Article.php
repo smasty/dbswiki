@@ -48,7 +48,7 @@ class Article extends Nette\Object {
     }
 
     public function getCategoryId() {
-        return $this->row->category_id;
+        return $this->row->cid;
     }
 
     public function getBody() {

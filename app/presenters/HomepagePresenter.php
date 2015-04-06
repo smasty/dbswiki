@@ -34,9 +34,4 @@ class HomepagePresenter extends BasePresenter{
 		$this->template->tags = $this->articleManager->getTagsForArticles();
 	}
 
-
-    public function renderCategories() {
-        $this->template->categories = $this->categoryManager->getCategories();
-    }
-
 }

@@ -14,7 +14,7 @@ class ArticleManager extends BaseManager {
             "SELECT a.id, a.title, a.created, c.title AS cname, c.id AS cid FROM article a ".
             "LEFT JOIN revision r ON a.revision_id = r.id ".
             "LEFT JOIN category c ON a.category_id = c.id ".
-            "ORDER BY a.title ASC ".
+            "ORDER BY a.title ".
             ($limit !== NULL ? ("LIMIT $limit" . ($offset !== NULL ? " OFFSET $offset" : "")) : "")
         );
     }
@@ -33,6 +33,25 @@ class ArticleManager extends BaseManager {
             "WHERE (a.id = ?)", $id
         );
         return $row ? new Article($this->db, $row) : false;
+    }
+
+
+    public function getByCategory($cid){
+        return $this->db->query(
+            "SELECT id, title, created FROM article WHERE category_id = ? ".
+            "ORDER BY title", $cid
+        );
+    }
+
+
+    public function getByTag($tid){
+        return $this->db->query(
+            "SELECT a.id, a.title, a.created, c.id AS cid, c.title AS cname FROM article a ".
+            "LEFT JOIN revision_tag rt ON rt.revision_id = a.revision_id ".
+            "LEFT JOIN category c ON a.category_id = c.id ".
+            "WHERE rt.tag_id = ? ".
+            "ORDER BY a.title", $tid
+        );
     }
 
 
@@ -172,11 +191,13 @@ class ArticleManager extends BaseManager {
     }
 
 
-    public function getTagsForArticles(){
+    public function getTagsForArticles($cid = NULL){
         return $this->db->fetchPairs(
             "SELECT a.id, string_agg(t.title, ', ') AS tags FROM article a ".
             "LEFT JOIN revision_tag rt ON a.revision_id = rt.revision_id ".
-            "LEFT JOIN tag t ON rt.tag_id = t.id GROUP BY a.id"
+            "LEFT JOIN tag t ON rt.tag_id = t.id ".
+            ($cid !== NULL ? "WHERE a.category_id = $cid " : "") .
+            "GROUP BY a.id"
         );
     }
 
@@ -220,7 +241,9 @@ class ArticleManager extends BaseManager {
     }
 
     protected function createTag($tag){
-        $this->db->query("INSERT INTO tag", ['title' => $tag]);
+        if(trim($tag)){
+            $this->db->query("INSERT INTO tag", ['title' => trim($tag)]);
+        }
     }
 
     protected function addRevisionTag($revision, $tag){

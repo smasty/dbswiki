@@ -2,19 +2,18 @@
 
 
 <h1 n:block=title>
-    Articles
+    Category: {$category->title}
 </h1>
 
-<p n:if="$user->isAllowed(Article, create)">
-<a n:href="Article:create" class="btn btn-success"><i class="icon-white icon-plus"></i> Add article</a>
-</p>
+<p>{$category->description|nl2br}</p>
+
+<h2>Articles ({$category->count})</h2>
 
 <table class="table table-bordered table-striped table-hover">
     <thead>
         <tr>
             <th>Article</th>
             <th>Date created</th>
-            <th>Category</th>
             <th>Tags</th>
         </tr>
     </thead>
@@ -27,17 +26,9 @@
                 {$a->created|date:'M j, Y, H:i:s'}
             </td>
             <td>
-                {if $a->cid}
-                <a n:href="Article:category, $a->cid">{$a->cname}</a>
-                {else}
-                    <i>&ndash; none &ndash;</i>
-                {/if}
-            </td>
-            <td>
                 {!$tags[$a->id] ?: "<i>&ndash; none &ndash;</i>"}
             </td>
         </tr>
     </tbody>
 </table>
 
-{control vp}

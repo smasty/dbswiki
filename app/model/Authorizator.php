@@ -24,7 +24,7 @@ class Authorizator extends Security\Permission {
         $this->deny('user', 'User', 'register');
 
         $this->addResource('Article');
-        $this->allow('guest', 'Article', ['show', 'history']);
+        $this->allow('guest', 'Article', ['show', 'history', 'category', 'tag']);
         $this->allow('user', 'Article', ['edit', 'create', 'revert']);
 
         $this->addResource('Category');

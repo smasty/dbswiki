@@ -113,8 +113,9 @@ class ArticlePresenter extends BasePresenter {
         $this['articleForm']->onSuccess[] = array($this, 'editSucceeded');
     }
 
-    // TODO listings for category, tag and author + links, group by...
+    // TODO listings for author
     // TODO media
+    // TODO search (title, author, date)
     // TODO statistics
 
     public function editSucceeded($form, $values){
@@ -187,5 +188,33 @@ class ArticlePresenter extends BasePresenter {
             $this->redirect("history", $id);
         }
     }
+
+
+    public function actionCategory($id){
+        $category = $this->categoryManager->findCategory($id);
+
+        if(!$category){
+            $this->flashMessage("Category with ID $id does not exist.");
+            $this->redirect("Homepage:");
+        }
+
+        $this->template->category = $category;
+        $this->template->articles = $this->articleManager->getByCategory($id);
+        $this->template->tags = $this->articleManager->getTagsForArticles($id);
+    }
+
+
+    public function actionTag($id){
+        $tag = $this->categoryManager->findTag($id);
+
+        if(!$tag){
+            $this->flashMessage("Tag with ID $id does not exist.");
+            $this->redirect("Homepage:");
+        }
+
+        $this->template->tag = $tag;
+        $this->template->articles = $this->articleManager->getByTag($id);
+    }
+
 
 }

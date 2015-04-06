@@ -14,3 +14,5 @@ a[href^="#error:"] {background: red;color: white;}
 /* CONTENT STYLING */
 .article-content{clear:both}
 table.table tr.active td, table.table tr.active th{background:#cfe !important;}
+
+a.badge:hover{background:#009900}
