@@ -94,7 +94,7 @@ class ArticleManager extends BaseManager {
     }
 
 
-    public function addArticle($title, $body, $category, $author, array $tags){
+    public function addArticle($title, $body, $category, $author, array $tags, array $media){
 
         $this->db->beginTransaction();
         try {
@@ -116,6 +116,11 @@ class ArticleManager extends BaseManager {
             foreach($tags as $tag){
                 $this->addRevisionTag($rid, $allTags[$tag]);
             }
+
+            // Media
+            foreach($media as $m){
+                $this->addRevisionMedia($rid, $m);
+            }
         } catch(\Exception $e){
             $this->db->rollBack();
             return false;
@@ -127,7 +132,7 @@ class ArticleManager extends BaseManager {
     }
 
 
-    public function editArticle($id, $title, $body, $category, $author, array $tags, $log){
+    public function editArticle($id, $title, $body, $category, $author, array $tags, $log, array $media){
 
         $this->db->beginTransaction();
         try {
@@ -149,6 +154,11 @@ class ArticleManager extends BaseManager {
             foreach($tags as $tag){
                 $this->addRevisionTag($rid, $allTags[$tag]);
             }
+
+            // Media
+            foreach($media as $m){
+                $this->addRevisionMedia($rid, $m);
+            }
         } catch(\Exception $e){
             $this->db->rollBack();
             return false;
@@ -164,7 +174,9 @@ class ArticleManager extends BaseManager {
         $this->db->beginTransaction();
 
         try{
-            $this->db->query("DELETE FROM revision_tag WHERE revision_id IN (SELECT id FROM revision WHERE article_id = ?)", $id);
+            $revisions = array_values($this->db->fetchPairs("SELECT id FROM revision WHERE article_id = ?", $id));
+            $this->db->query("DELETE FROM revision_tag WHERE revision_id IN (?)", $revisions);
+            $this->db->query("DELETE FROM revision_media WHERE revision_id IN (?)", $revisions);
             $this->db->query("UPDATE article SET revision_id = NULL WHERE id = ?", $id);
             $this->db->query("DELETE FROM revision WHERE article_id = ?", $id);
             $this->db->query("DELETE FROM article WHERE id = ?", $id);
@@ -260,6 +272,13 @@ class ArticleManager extends BaseManager {
         $this->db->query("INSERT INTO revision_tag", [
             'revision_id' => $revision,
             'tag_id' => $tag
+        ]);
+    }
+
+    protected function addRevisionMedia($revision, $media){
+        $this->db->query("INSERT INTO revision_media", [
+            'revision_id' => $revision,
+            'media_id' => $media
         ]);
     }
 

@@ -22,6 +22,7 @@ class Article extends Nette\Object {
     private $db;
 
     private $tags = null;
+    private $media = null;
 
     private $revision;
 
@@ -73,6 +74,18 @@ class Article extends Nette\Object {
         }
 
         return $this->tags;
+    }
+
+    public function getMedia(){
+        if($this->media === NULL){
+            $this->media = $this->db->fetchPairs(
+                "SELECT m.id, m.title FROM revision_media rm ".
+                "LEFT JOIN media m ON m.id = rm.media_id ".
+                "WHERE rm.revision_id = ?", $this->row->revision_id
+            );
+        }
+
+        return $this->media;
     }
 
 

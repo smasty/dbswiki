@@ -2,34 +2,38 @@
 
 
 <h1 n:block=title>
-    Categories
+    Media files
 </h1>
 
-<p n:if="$user->isAllowed(Category, create)">
-<a n:href="Category:create" class="btn btn-success">
-    <i class="icon-white icon-plus"></i> Add category
+<p n:if="$user->isAllowed(Media, create)">
+<a n:href="Media:create" class="btn btn-success">
+    <i class="icon-white icon-plus"></i> Upload media
 </a>
 </p>
 
 <table class="table table-bordered table-striped table-hover">
     <thead>
         <tr>
-            <th>Category</th>
-            <th>Description</th>
-            <th>Number of articles</th>
+            <th>Title</th>
+            <th>Type</th>
+            <th>File Name</th>
+            <th>Created</th>
         </tr>
     </thead>
     <tbody>
-        <tr n:foreach="$categories as $cat">
+        <tr n:foreach="$media as $m">
             <td>
-                <a n:href="Article:category, $cat->id">{$cat->title}</a>
+                <a href="/{$m->path}" target="_blank">{$m->title}</a>
             </td>
             <td>
-                {$cat->description|nl2br}
+                {$presenter->mediaManager->getType($m->type)}
             </td>
-            <th>
-                {$cat->count}
-            </th>
+            <td>
+                {basename($m->path)}
+            </td>
+            <td>
+                {$m->created|date:'M j, Y H:i'}
+            </td>
         </tr>
     </tbody>
 </table>

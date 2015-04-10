@@ -16,3 +16,9 @@ a[href^="#error:"] {background: red;color: white;}
 table.table tr.active td, table.table tr.active th{background:#cfe !important;}
 
 a.badge:hover{background:#009900}
+
+table.table-media{
+    float: right;
+    margin:0 0 1.5em 1.5em;
+    width:300px;
+}

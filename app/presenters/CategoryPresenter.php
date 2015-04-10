@@ -38,7 +38,7 @@ class CategoryPresenter extends BasePresenter {
 
     public function createSucceeded($form, $values){
         if($this->categoryManager->getCategoryByTitle($values->title)){
-            $form->addError("Category with this name already exists.");
+            $form->addError("Category with this name already exists.", "error");
             return;
         }
 

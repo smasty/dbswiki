@@ -8,8 +8,8 @@ parameters:
         document: Document
         file: Arbitrary file
 
-    # Relative to presenters directory
-    fileUploadPath: ../../www/uploads
+    # Relative to www root
+    fileUploadPath: uploads
 
 
 php:
@@ -30,7 +30,7 @@ services:
 	- App\Model\AuthorManager
 	- App\Model\ArticleManager
 	- App\Model\CategoryManager
-	- App\Model\MediaManager(%mediaTypes%, %fileUploadPath%)
+	- App\Model\MediaManager(@Nette\Database\Connection, %mediaTypes%, %fileUploadPath%)
 
 	authenticator: App\Model\Authenticator
 	authorizator: App\Model\Authorizator

@@ -6,6 +6,7 @@ namespace App\Presenters;
 use App\Forms\BaseForm;
 use App\Model\ArticleManager;
 use App\Model\CategoryManager;
+use App\Model\MediaManager;
 
 class ArticlePresenter extends BasePresenter {
 
@@ -20,6 +21,12 @@ class ArticlePresenter extends BasePresenter {
      * @inject
      */
     public $categoryManager;
+
+    /**
+     * @var MediaManager
+     * @inject
+     */
+    public $mediaManager;
 
 
     public function renderShow($id, $rev = NULL){
@@ -39,6 +46,7 @@ class ArticlePresenter extends BasePresenter {
         }
 
         $this->template->article = $article;
+        $this->template->media = $this->mediaManager->getByRevision($article->revisionId)->fetchAll();
     }
 
 
@@ -65,6 +73,8 @@ class ArticlePresenter extends BasePresenter {
 
         $form->addText('tags', 'Tags (comma-separated):')->setAttribute('class', 'input-xxlarge');
 
+        $form->addCheckboxList("media", "Attach media:", $this->mediaManager->getPairs());
+
         return $form;
     }
 
@@ -77,7 +87,7 @@ class ArticlePresenter extends BasePresenter {
         }
 
         if($id = $this->articleManager->addArticle($values->title, $values->body, $values->category,
-        $this->user->id, $tags)){
+        $this->user->id, $tags, $values->media)){
             $this->flashMessage("Article created successfully.");
             $this->redirect("show", $id);
         } else{
@@ -91,7 +101,7 @@ class ArticlePresenter extends BasePresenter {
     public function actionEdit($id){
         $article = $this->articleManager->find($id);
         if($article === false){
-            $this->flashMessage("Article with ID $id does not exist.");
+            $this->flashMessage("Article with ID $id does not exist.", "error");
             $this->redirect("Homepage:");
         }
 
@@ -107,6 +117,7 @@ class ArticlePresenter extends BasePresenter {
             'body' => $article->body,
             'category' => $article->categoryId,
             'tags' => implode(", ", $article->tags),
+            'media' => $article->media,
         ]);
 
         $this['articleForm']->addSubmit('send2', 'Edit')->setAttribute('class', 'btn-primary btn-large');
@@ -114,7 +125,6 @@ class ArticlePresenter extends BasePresenter {
     }
 
     // TODO listings for author
-    // TODO media (create, attach)
 
     public function editSucceeded($form, $values){
 
@@ -125,7 +135,7 @@ class ArticlePresenter extends BasePresenter {
 
         if($this->articleManager->editArticle(
             $this->getParameter('id'), $values->title, $values->body, $values->category,
-            $this->user->id, $tags, $values->log
+            $this->user->id, $tags, $values->log, $values->media
         )){
             $this->flashMessage("Article edited successfully. New revision was created.");
             $this->redirect("show", $this->getParameter('id'));
@@ -140,7 +150,7 @@ class ArticlePresenter extends BasePresenter {
     public function actionDelete($id){
         $article = $this->articleManager->find($id);
         if($article === false){
-            $this->flashMessage("Article with ID $id does not exist.");
+            $this->flashMessage("Article with ID $id does not exist.", "error");
             $this->redirect("Homepage:");
         }
 
@@ -174,7 +184,7 @@ class ArticlePresenter extends BasePresenter {
     public function actionRevert($id, $rev){
         $article = $this->articleManager->find($id);
         if($article === false){
-            $this->flashMessage("Article with ID $id does not exist.");
+            $this->flashMessage("Article with ID $id does not exist.", "error");
             $this->redirect("Homepage:");
         }
 
@@ -192,7 +202,7 @@ class ArticlePresenter extends BasePresenter {
         $category = $this->categoryManager->findCategory($id);
 
         if(!$category){
-            $this->flashMessage("Category with ID $id does not exist.");
+            $this->flashMessage("Category with ID $id does not exist.", "error");
             $this->redirect("Homepage:");
         }
 
@@ -206,7 +216,7 @@ class ArticlePresenter extends BasePresenter {
         $tag = $this->categoryManager->findTag($id);
 
         if(!$tag){
-            $this->flashMessage("Tag with ID $id does not exist.");
+            $this->flashMessage("Tag with ID $id does not exist.", "error");
             $this->redirect("Homepage:");
         }
 

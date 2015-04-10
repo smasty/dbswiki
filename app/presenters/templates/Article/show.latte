@@ -22,7 +22,25 @@
 </p>
 
 <hr>
-
 <div class="article-content">
+
+{if !empty($media)}
+<table class="table table-bordered table-striped table-hover table-condensed table-media">
+    <caption>Attached media</caption>
+    <thead>
+        <tr>
+            <th>File</th>
+            <th>Type</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr n:foreach="$media as $m">
+            <td><a href="/{$m->path}" target="_blank">{$m->title}</a></td>
+            <td>{$presenter->mediaManager->getType($m->type)} (.{pathinfo($m->path, PATHINFO_EXTENSION)})</td>
+        </tr>
+    </tbody>
+</table>
+{/if}
+
     {!Michelf\Markdown::defaultTransform($article->body)}
 </div>
