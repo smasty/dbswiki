@@ -1,0 +1,36 @@
+    {block content}
+
+
+<h1 n:block=title>
+    Categories
+</h1>
+
+<p n:if="$user->isAllowed(Category, create)">
+<a n:href="Category:create" class="btn btn-success">
+    <i class="icon-white icon-plus"></i> Add category
+</a>
+</p>
+
+<table class="table table-bordered table-striped table-hover">
+    <thead>
+        <tr>
+            <th>Category</th>
+            <th>Description</th>
+            <th>Number of articles</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr n:foreach="$categories as $cat">
+            <td>
+                <a n:href="Article:category, $cat->id">{$cat->title}</a>
+            </td>
+            <td>
+                {$cat->description|nl2br}
+            </td>
+            <th>
+                {$cat->count}
+            </th>
+        </tr>
+    </tbody>
+</table>
+

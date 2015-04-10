@@ -1,6 +1,16 @@
 
 parameters:
 
+    mediaTypes:
+        image: Image
+        video: Video
+        audio: Audio
+        document: Document
+        file: Arbitrary file
+
+    # Relative to presenters directory
+    fileUploadPath: ../../www/uploads
+
 
 php:
 	date.timezone: Europe/Prague
@@ -20,6 +30,7 @@ services:
 	- App\Model\AuthorManager
 	- App\Model\ArticleManager
 	- App\Model\CategoryManager
+	- App\Model\MediaManager(%mediaTypes%, %fileUploadPath%)
 
 	authenticator: App\Model\Authenticator
 	authorizator: App\Model\Authorizator

@@ -24,6 +24,7 @@
                     <li><a n:href="Homepage:">Articles</a></li>
                     <li><a n:href="Category:list">Categories</a></li>
                     <li><a n:href="Category:tags">Tags</a></li>
+                    <li><a n:href="Media:list">Media</a></li>
                     <li class="dropdown" n:if="$user->isAllowed(User)">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                           Users
@@ -33,8 +34,12 @@
                           <li><a n:href="User:manage"><i class="icon-th-list"></i> Manage users</a></li>
                           <li><a n:href="User:create"><i class="icon-plus"></i> Create new user</a></li>
                         </ul>
-                      </li>
+                    </li>
                 </ul>
+                {form searchForm, class => 'navbar-search pull-left'}
+                    <input type="text" class="search-query" placeholder="Search articles" n:name="query">
+                    {input send}
+                {/form}
                 <ul class="nav pull-right">
                 {if $user->loggedIn}
                     <li class="navbar-text">Welcome, {ucfirst($user->identity->name)}!</li>

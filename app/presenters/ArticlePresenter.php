@@ -53,7 +53,7 @@ class ArticlePresenter extends BasePresenter {
     protected function createComponentArticleForm(){
         $form = new BaseForm;
 
-        $form->addText('title', 'Title:')
+        $form->addText('title', 'Title:', 20, 255)
              ->setRequired('Please specify title.')
              ->setAttribute('class', 'input-xxlarge');
 
@@ -114,9 +114,7 @@ class ArticlePresenter extends BasePresenter {
     }
 
     // TODO listings for author
-    // TODO media
-    // TODO search (title, author, date)
-    // TODO statistics
+    // TODO media (create, attach)
 
     public function editSucceeded($form, $values){
 
@@ -214,6 +212,17 @@ class ArticlePresenter extends BasePresenter {
 
         $this->template->tag = $tag;
         $this->template->articles = $this->articleManager->getByTag($id);
+    }
+
+
+    public function actionSearch($query){
+        $query = trim($query);
+        if(!$query){
+            $this->redirect("Homepage:");
+        }
+        $this->template->query = $query;
+        $this->template->articles = $this->articleManager->searchByTitle($query);
+        $this->template->tags = $this->articleManager->getTagsForArticles();
     }
 
 

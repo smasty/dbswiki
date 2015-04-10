@@ -27,10 +27,10 @@ class UserPresenter extends BasePresenter {
      */
     protected function createComponentSignInForm() {
         $form = new BaseForm;
-        $form->addText('username', 'Username:')
+        $form->addText('username', 'Username:', 20, 255)
              ->setRequired('Please enter your username.');
 
-        $form->addPassword('password', 'Password:')
+        $form->addPassword('password', 'Password:', 20, 255)
              ->setRequired('Please enter your password.');
 
         $form->addCheckbox('remember', 'Keep me signed in');
@@ -40,6 +40,7 @@ class UserPresenter extends BasePresenter {
         $form->onSuccess[] = array($this, 'loginSucceeded');
 
         $form->onSuccess[] = function ($form) {
+            $this->restoreRequest($this->getParameter('backlink'));
             $form->getPresenter()->redirect('Homepage:');
         };
         return $form;
@@ -50,7 +51,7 @@ class UserPresenter extends BasePresenter {
         if ($values->remember) {
             $this->user->setExpiration('14 days', FALSE);
         } else {
-            $this->user->setExpiration('20 minutes', TRUE);
+            $this->user->setExpiration('30 minutes', TRUE);
         }
 
         try {
@@ -71,16 +72,16 @@ class UserPresenter extends BasePresenter {
 
     protected function createComponentSignUpForm(){
         $form = new BaseForm();
-        $form->addText('name', 'Username:')
+        $form->addText('name', 'Username:', 20, 255)
              ->setRequired('Please enter your username.');
 
-        $form->addPassword('password', 'Password:')
+        $form->addPassword('password', 'Password:', 20, 255)
              ->setRequired('Please enter your password.');
 
-        $form->addPassword('password2', 'Confirm password:')
+        $form->addPassword('password2', 'Confirm password:', 20, 255)
              ->setRequired('Please enter your password.');
 
-        $form->addText('mail', 'E-mail:')
+        $form->addText('mail', 'E-mail:', 20, 255)
              ->addRule(BaseForm::EMAIL, "Please enter a valid e-mail.");
 
         return $form;

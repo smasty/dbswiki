@@ -19,7 +19,7 @@ class CategoryPresenter extends BasePresenter {
     protected function createComponentCategoryForm(){
         $form = new BaseForm();
 
-        $form->addText("title", "Title:")
+        $form->addText("title", "Title:", 20, 255)
             ->setRequired("Please enter a category title.")
             ->setAttribute("class", "input-xlarge");
 

@@ -44,6 +44,16 @@ class ArticleManager extends BaseManager {
     }
 
 
+    public function searchByTitle($title){
+        return $this->db->query(
+            "SELECT a.id, a.title, a.created, c.title AS cname, c.id AS cid FROM article a ".
+            "LEFT JOIN category c ON a.category_id = c.id ".
+            "WHERE a.title ILIKE ? ".
+            "ORDER BY a.title", "%$title%"
+        );
+    }
+
+
     public function getByTag($tid){
         return $this->db->query(
             "SELECT a.id, a.title, a.created, c.id AS cid, c.title AS cname FROM article a ".
