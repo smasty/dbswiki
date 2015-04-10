@@ -12,17 +12,12 @@ a[href^="#error:"] {background: red;color: white;}
 
 
 /* CONTENT STYLING */
-.article-content{clear:both}
+.article-content{text-align:justify}
 table.table tr.active td, table.table tr.active th{background:#cfe !important;}
 
 a.badge:hover{background:#009900}
 
-table.table-media{
-    float: right;
-    margin:0 0 1.5em 1.5em;
-    width:300px;
-}
-
+table.table-media{float: right;margin:0 0 1.5em 1.5em;width:300px;}
 table.table-author{width:auto}
 table.table-author th{width:200px}
 table.table-author td{width:300px}

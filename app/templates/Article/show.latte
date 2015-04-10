@@ -5,7 +5,7 @@
 <h1 n:block=title>
     {ifset $revision}
         <a n:href="show, $article->id" title="Go to the latest revision">{$article->title}</a>
-        <small>
+        <small><br>
             Revision from {$revision->created|date:'M j, Y, H:i'}
             by <a n:href="Homepage">{ucfirst($revision->author_name)}</a>.
         </small>
@@ -13,16 +13,6 @@
         {$article->title}
     {/ifset}
 </h1>
-<p>
-    Category: <a n:href="Article:category, $article->categoryId">{$article->category}</a><br>
-    Tags:
-    {foreach $article->tags as $id => $tag}
-        <a n:href="tag, $id" class="badge badge-success">{$tag}</a>
-    {/foreach}
-</p>
-
-<hr>
-<div class="article-content">
 
 {if !empty($media)}
 <table class="table table-bordered table-striped table-hover table-condensed table-media">
@@ -41,6 +31,18 @@
     </tbody>
 </table>
 {/if}
+
+<p>
+    Category: <a n:href="Article:category, $article->categoryId">{$article->category}</a><br>
+    Tags:
+    {foreach $article->tags as $id => $tag}
+        <a n:href="tag, $id" class="badge badge-success">{$tag}</a>
+    {/foreach}
+</p>
+
+<hr>
+<div class="article-content">
+
 
     {!Michelf\Markdown::defaultTransform($article->body)}
 </div>

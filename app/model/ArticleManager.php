@@ -81,7 +81,7 @@ class ArticleManager extends BaseManager {
 
     public function getArticleRevision($id, $rev){
         $row = $this->db->fetch(
-            "SELECT a.id, a.title, a.created, r.body, c.title AS category_name, c.id AS category_id, a.revision_id FROM article a ".
+            "SELECT a.id, a.title, a.created, r.body, c.title AS cname, c.id AS cid, a.revision_id FROM article a ".
             "LEFT JOIN revision r ON a.id = r.article_id ".
             "LEFT JOIN category c ON a.category_id = c.id ".
             "WHERE (a.id = ?) AND (r.id = ?)", $id, $rev
