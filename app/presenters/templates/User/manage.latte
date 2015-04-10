@@ -21,7 +21,7 @@
 
         <tr n:foreach="$users as $row">
             <td>{$row->id}.</td>
-            <td><strong>{$row->name}</strong></td>
+            <td><a n:href="Author:show, $row->id">{ucfirst($row->name)}</td>
             <td>
                 <a href="mailto:{$row->mail}">{$row->mail}</a>
             </td>

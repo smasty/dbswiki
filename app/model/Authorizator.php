@@ -35,6 +35,9 @@ class Authorizator extends Security\Permission {
         $this->allow('guest', 'Media', ['list']);
         $this->allow('user', 'Media', ['edit', 'delete', 'create']);
 
+        $this->addResource('Author');
+        $this->allow('guest', 'Author', ['show', 'list']);
+
         $this->allow('admin');
 
     }

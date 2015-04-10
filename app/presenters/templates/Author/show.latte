@@ -1,0 +1,68 @@
+{block content}
+
+
+<h1 n:block=title>
+    Author: {ucfirst($author->name)}
+</h1>
+
+<table class="table table-bordered table-striped table-hover table-condensed table-author">
+    <caption>Author information and statistics</caption>
+    <tbody>
+        <tr>
+            <th>Role:</th>
+            <td>{ucfirst($author->role)}</td>
+        </tr>
+        <tr>
+            <th>E-mail:</th>
+            <td><a href="mailto:{$author->mail}">{$author->mail}</a></td>
+        </tr>
+        <tr>
+            <th>Authored articles:</th>
+            <td>{$author->articles}</td>
+        </tr>
+        <tr>
+            <th>Authored revisions:</th>
+            <td>{$author->revisions}</td>
+        </tr>
+        <tr>
+            <th>Contributed categories:</th>
+            <td>{$author->categories}</td>
+        </tr>
+        <tr>
+            <th>Latest revision:</th>
+            <td>{$author->latest|date:'M j, Y H:i'}</td>
+        </tr>
+    </tbody>
+</table>
+
+
+
+<h2>Authored articles</h2>
+
+<table class="table table-bordered table-striped table-hover">
+    <thead>
+        <tr>
+            <th>Article</th>
+            <th>Authored revisions</th>
+            <th>Latest revision</th>
+            <th>Category</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr n:foreach="$articles as $a">
+            <td>
+                <a n:href="Article:show, $a->id">{$a->title}</a>
+            </td>
+            <th>
+                {$a->count}
+            </th>
+            <td>
+                {$a->latest|date:'M j, Y, H:i'}
+            </td>
+            <td>
+                <a n:href="Article:category, $a->cid">{$a->cname}</a>
+            </td>
+        </tr>
+    </tbody>
+</table>
+

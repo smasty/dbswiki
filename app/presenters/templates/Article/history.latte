@@ -28,7 +28,7 @@
                 {$rev->created|date:'M j, Y, H:i:s'}
             </td>
             <td>
-                <a n:href="Homepage:">{ucfirst($rev->author_name)}</a>
+                <a n:href="Author:show, $rev->author_id">{ucfirst($rev->author_name)}</a>
             </td>
             <td>
                 {isset($tags[$rev->id]) ? $tags[$rev->id]}

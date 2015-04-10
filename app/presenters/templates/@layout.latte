@@ -21,12 +21,16 @@
             <div class="container-fluid">
                 <a class="brand" n:href="Homepage:">DBS Wiki</a>
                 <ul class="nav">
-                    <li><a n:href="Homepage:">Articles</a></li>
-                    <li><a n:href="Category:list">Categories</a></li>
-                    <li><a n:href="Category:tags">Tags</a></li>
-                    <li><a n:href="Media:list">Media</a></li>
-                    <li class="dropdown" n:if="$user->isAllowed(User)">
+                    <li><a n:href="Homepage:"><i class="icon-file icon-white"></i> Articles</a></li>
+                    <li><a n:href="Category:list"><i class="icon-folder-open icon-white"></i> Categories</a></li>
+                    <li><a n:href="Category:tags"><i class="icon-tags icon-white"></i> Tags</a></li>
+                    <li><a n:href="Media:list"><i class="icon-picture icon-white"></i> Media</a></li>
+                    <li><a n:href="Author:list"><i class="icon-user icon-white"></i> Authors</a></li>
+                    {if $user->isAllowed(User)}
+                    <li class="divider navbar-text">|</li>
+                    <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                        <i class="icon-cog icon-white"></i>
                           Users
                           <b class="caret"></b>
                         </a>
@@ -35,19 +39,21 @@
                           <li><a n:href="User:create"><i class="icon-plus"></i> Create new user</a></li>
                         </ul>
                     </li>
+                    {/if}
                 </ul>
                 {form searchForm, class => 'navbar-search pull-left'}
                     <input type="text" class="search-query" placeholder="Search articles" n:name="query">
+                    <i class="icon-search icon-white" style="position:relative;left:-26px;top:1px"></i>
                     {input send}
                 {/form}
                 <ul class="nav pull-right">
                 {if $user->loggedIn}
                     <li class="navbar-text">Welcome, {ucfirst($user->identity->name)}!</li>
-                    <li><a n:href="User:logout">Logout</a></li>
+                    <li><a n:href="User:logout">Logout &nbsp;&nbsp;<i class="icon-share-alt icon-white"></i></a></li>
                 {else}
                     <li class="navbar-text">Welcome, stranger.</li>
-                    <li><a n:href="User:login">Log in</a></li>
-                    <li><a n:href="User:register">Register</a></li>
+                    <li><a n:href="User:login"><i class="icon-share-alt icon-white"></i> Log in</a></li>
+                    <li><a n:href="User:register"><i class="icon-user icon-white"></i> Register</a></li>
                 {/if}
                 </ul>
             </div>

@@ -208,11 +208,13 @@ class ArticleManager extends BaseManager {
     }
 
 
+    // todo
     public function getAllTags(){
         return $this->db->fetchPairs("SELECT title, id FROM tag ORDER BY title");
     }
 
 
+    // todo
     public function getTagsForArticles($cid = NULL){
         return $this->db->fetchPairs(
             "SELECT a.id, string_agg(t.title, ', ') AS tags FROM article a ".
@@ -224,6 +226,7 @@ class ArticleManager extends BaseManager {
     }
 
 
+    // todo
     public function getTagsForArticleRevisions($articleId){
         return $this->db->fetchPairs(
             "SELECT rt.revision_id AS id, string_agg(t.title, ', ') AS tags FROM revision_tag rt ".
@@ -262,12 +265,14 @@ class ArticleManager extends BaseManager {
         ]);
     }
 
+    // todo
     protected function createTag($tag){
         if(trim($tag)){
             $this->db->query("INSERT INTO tag", ['title' => trim($tag)]);
         }
     }
 
+    // todo
     protected function addRevisionTag($revision, $tag){
         $this->db->query("INSERT INTO revision_tag", [
             'revision_id' => $revision,
@@ -275,6 +280,7 @@ class ArticleManager extends BaseManager {
         ]);
     }
 
+    // todo
     protected function addRevisionMedia($revision, $media){
         $this->db->query("INSERT INTO revision_media", [
             'revision_id' => $revision,

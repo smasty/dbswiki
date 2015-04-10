@@ -117,14 +117,12 @@ class ArticlePresenter extends BasePresenter {
             'body' => $article->body,
             'category' => $article->categoryId,
             'tags' => implode(", ", $article->tags),
-            'media' => $article->media,
+            'media' => array_keys($article->media),
         ]);
 
         $this['articleForm']->addSubmit('send2', 'Edit')->setAttribute('class', 'btn-primary btn-large');
         $this['articleForm']->onSuccess[] = array($this, 'editSucceeded');
     }
-
-    // TODO listings for author
 
     public function editSucceeded($form, $values){
 
@@ -203,7 +201,7 @@ class ArticlePresenter extends BasePresenter {
 
         if(!$category){
             $this->flashMessage("Category with ID $id does not exist.", "error");
-            $this->redirect("Homepage:");
+            $this->redirect("Category:list");
         }
 
         $this->template->category = $category;
@@ -217,7 +215,7 @@ class ArticlePresenter extends BasePresenter {
 
         if(!$tag){
             $this->flashMessage("Tag with ID $id does not exist.", "error");
-            $this->redirect("Homepage:");
+            $this->redirect("Category:tags");
         }
 
         $this->template->tag = $tag;

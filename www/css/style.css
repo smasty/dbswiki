@@ -22,3 +22,7 @@ table.table-media{
     margin:0 0 1.5em 1.5em;
     width:300px;
 }
+
+table.table-author{width:auto}
+table.table-author th{width:200px}
+table.table-author td{width:300px}

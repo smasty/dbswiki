@@ -1,0 +1,32 @@
+{block content}
+
+
+<h1 n:block=title>
+    Contributing authors
+</h1>
+
+<table class="table table-bordered table-striped table-hover">
+    <thead>
+        <tr>
+            <th>Author</th>
+            <th>Role</th>
+            <th>E-mail</th>
+            <th>Authored articles</th>
+            <th>Authored revisions</th>
+            <th>Contributed categories</th>
+            <th>Latest revision</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr n:foreach="$authors as $author">
+            <td><a n:href="Author:show, $author->id">{ucfirst($author->name)}</a></td>
+            <td>{ucfirst($author->role)}</td>
+            <td><a href="mailto:{$author->mail}">{$author->mail}</a></td>
+            <td>{$author->articles}</td>
+            <td>{$author->revisions}</td>
+            <td>{$author->categories}</td>
+            <td>{$author->latest|date:'M j, Y H:i'}</td>
+        </tr>
+    </tbody>
+</table>
+
