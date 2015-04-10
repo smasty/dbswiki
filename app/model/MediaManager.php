@@ -73,4 +73,11 @@ class MediaManager extends BaseManager {
         return true;
     }
 
+    public function addRevisionMedia($revision, $media){
+        $this->db->query("INSERT INTO revision_media", [
+            'revision_id' => $revision,
+            'media_id' => $media
+        ]);
+    }
+
 }

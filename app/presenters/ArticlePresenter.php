@@ -6,6 +6,7 @@ namespace App\Presenters;
 use App\Forms\BaseForm;
 use App\Model\ArticleManager;
 use App\Model\CategoryManager;
+use App\Model\TagManager;
 use App\Model\MediaManager;
 
 class ArticlePresenter extends BasePresenter {
@@ -27,6 +28,12 @@ class ArticlePresenter extends BasePresenter {
      * @inject
      */
     public $mediaManager;
+
+    /**
+     * @var TagManager
+     * @inject
+     */
+    public $tagManager;
 
 
     public function renderShow($id, $rev = NULL){
@@ -68,7 +75,7 @@ class ArticlePresenter extends BasePresenter {
         $form->addTextArea('body', 'Body (Markdown):', 100, 15)
              ->setRequired('Please enter the body.')->setAttribute('class', 'input-block-level');
 
-        $form->addSelect('category', 'Category:', $this->categoryManager->getCategoriesPairs())
+        $form->addSelect('category', 'Category:', $this->categoryManager->getPairs())
              ->setPrompt('-- Select --');
 
         $form->addText('tags', 'Tags (comma-separated):')->setAttribute('class', 'input-xxlarge');
@@ -175,7 +182,7 @@ class ArticlePresenter extends BasePresenter {
 
         $this->template->article = $article;
         $this->template->revisions = $this->articleManager->getRevisions($id, $vp->paginator->itemsPerPage, $vp->paginator->offset);
-        $this->template->tags = $this->articleManager->getTagsForArticleRevisions($id);
+        $this->template->tags = $this->tagManager->getTagsForArticleRevisions($id);
     }
 
 
@@ -197,7 +204,7 @@ class ArticlePresenter extends BasePresenter {
 
 
     public function actionCategory($id){
-        $category = $this->categoryManager->findCategory($id);
+        $category = $this->categoryManager->find($id);
 
         if(!$category){
             $this->flashMessage("Category with ID $id does not exist.", "error");
@@ -206,12 +213,12 @@ class ArticlePresenter extends BasePresenter {
 
         $this->template->category = $category;
         $this->template->articles = $this->articleManager->getByCategory($id);
-        $this->template->tags = $this->articleManager->getTagsForArticles($id);
+        $this->template->tags = $this->tagManager->getTagsForArticles($id);
     }
 
 
     public function actionTag($id){
-        $tag = $this->categoryManager->findTag($id);
+        $tag = $this->tagManager->find($id);
 
         if(!$tag){
             $this->flashMessage("Tag with ID $id does not exist.", "error");
@@ -230,7 +237,7 @@ class ArticlePresenter extends BasePresenter {
         }
         $this->template->query = $query;
         $this->template->articles = $this->articleManager->searchByTitle($query);
-        $this->template->tags = $this->articleManager->getTagsForArticles();
+        $this->template->tags = $this->tagManager->getTagsForArticles();
     }
 
 

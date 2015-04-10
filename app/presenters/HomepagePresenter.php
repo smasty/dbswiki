@@ -18,10 +18,10 @@ class HomepagePresenter extends BasePresenter{
     public $articleManager;
 
     /**
-     * @var Model\CategoryManager
+     * @var Model\TagManager
      * @inject
      */
-    public $categoryManager;
+    public $tagManager;
 
 	public function actionDefault()	{
 
@@ -31,7 +31,7 @@ class HomepagePresenter extends BasePresenter{
 
 		$this->template->articles = $this->articleManager
             ->getAll($vp->paginator->itemsPerPage, $vp->paginator->offset);
-		$this->template->tags = $this->articleManager->getTagsForArticles();
+		$this->template->tags = $this->tagManager->getTagsForArticles();
 	}
 
 }

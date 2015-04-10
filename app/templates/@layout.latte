@@ -48,7 +48,11 @@
                 {/form}
                 <ul class="nav pull-right">
                 {if $user->loggedIn}
-                    <li class="navbar-text">Welcome, {ucfirst($user->identity->name)}!</li>
+                    <li><a n:href="Author:show, $user->id">
+                        <i class="icon-user icon-white"></i>
+                        Welcome, {ucfirst($user->identity->name)}!
+                        </a>
+                    </li>
                     <li><a n:href="User:logout">Logout &nbsp;&nbsp;<i class="icon-share-alt icon-white"></i></a></li>
                 {else}
                     <li class="navbar-text">Welcome, stranger.</li>

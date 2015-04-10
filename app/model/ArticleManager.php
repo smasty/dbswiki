@@ -9,6 +9,19 @@ use Nette\Database\SqlLiteral;
 class ArticleManager extends BaseManager {
 
 
+    /**
+     * @var TagManager
+     * @inject
+     */
+    public $tagManager;
+
+    /**
+     * @var MediaManager
+     * @inject
+     */
+    public $mediaManager;
+
+
     public function getAll($limit = NULL, $offset = NULL){
         return $this->db->query(
             "SELECT a.id, a.title, a.created, c.title AS cname, c.id AS cid FROM article a ".
@@ -44,12 +57,13 @@ class ArticleManager extends BaseManager {
     }
 
 
-    public function searchByTitle($title){
+    public function searchByTitle($query){
         return $this->db->query(
             "SELECT a.id, a.title, a.created, c.title AS cname, c.id AS cid FROM article a ".
             "LEFT JOIN category c ON a.category_id = c.id ".
-            "WHERE a.title ILIKE ? ".
-            "ORDER BY a.title", "%$title%"
+            "LEFT JOIN revision r ON a.revision_id = r.id ".
+            "WHERE a.title ILIKE ? OR r.body ILIKE ? ".
+            "ORDER BY a.title", "%$query%", "%$query%"
         );
     }
 
@@ -105,21 +119,21 @@ class ArticleManager extends BaseManager {
             $this->setArticleRevision($aid, $rid);
 
             // Tags handling
-            $allTags = $this->getAllTags();
+            $allTags = $this->tagManager->getPairs();
             foreach($tags as $tag){
                 if(!isset($allTags[$tag])){
-                    $this->createTag($tag);
+                    $this->tagManager->createTag($tag);
                 }
             }
 
-            $allTags = $this->getAllTags();
+            $allTags = $this->tagManager->getPairs();
             foreach($tags as $tag){
-                $this->addRevisionTag($rid, $allTags[$tag]);
+                $this->tagManager->addRevisionTag($rid, $allTags[$tag]);
             }
 
             // Media
             foreach($media as $m){
-                $this->addRevisionMedia($rid, $m);
+                $this->mediaManager->addRevisionMedia($rid, $m);
             }
         } catch(\Exception $e){
             $this->db->rollBack();
@@ -143,21 +157,21 @@ class ArticleManager extends BaseManager {
             $this->setArticleRevision($id, $rid);
 
             // Tags handling
-            $allTags = $this->getAllTags();
+            $allTags = $this->tagManager->getPairs();
             foreach($tags as $tag){
                 if(!isset($allTags[$tag])){
-                    $this->createTag($tag);
+                    $this->tagManager->createTag($tag);
                 }
             }
 
-            $allTags = $this->getAllTags();
+            $allTags = $this->tagManager->getPairs();
             foreach($tags as $tag){
-                $this->addRevisionTag($rid, $allTags[$tag]);
+                $this->tagManager->addRevisionTag($rid, $allTags[$tag]);
             }
 
             // Media
             foreach($media as $m){
-                $this->addRevisionMedia($rid, $m);
+                $this->mediaManager->addRevisionMedia($rid, $m);
             }
         } catch(\Exception $e){
             $this->db->rollBack();
@@ -208,34 +222,6 @@ class ArticleManager extends BaseManager {
     }
 
 
-    // todo
-    public function getAllTags(){
-        return $this->db->fetchPairs("SELECT title, id FROM tag ORDER BY title");
-    }
-
-
-    // todo
-    public function getTagsForArticles($cid = NULL){
-        return $this->db->fetchPairs(
-            "SELECT a.id, string_agg(t.title, ', ') AS tags FROM article a ".
-            "LEFT JOIN revision_tag rt ON a.revision_id = rt.revision_id ".
-            "LEFT JOIN tag t ON rt.tag_id = t.id ".
-            ($cid !== NULL ? "WHERE a.category_id = $cid " : "") .
-            "GROUP BY a.id"
-        );
-    }
-
-
-    // todo
-    public function getTagsForArticleRevisions($articleId){
-        return $this->db->fetchPairs(
-            "SELECT rt.revision_id AS id, string_agg(t.title, ', ') AS tags FROM revision_tag rt ".
-            "LEFT JOIN tag t ON t.id = rt.tag_id ".
-            "LEFT JOIN revision r ON r.id = rt.revision_id ".
-            "WHERE r.article_id = ? GROUP BY rt.revision_id", $articleId);
-    }
-
-
     protected function setArticleRevision($article, $revision){
         $this->db->query("UPDATE article SET revision_id = ? WHERE id = ?", $revision, $article);
     }
@@ -262,29 +248,6 @@ class ArticleManager extends BaseManager {
             'body' => $body,
             'article_id' => $article,
             'author_id' => $author
-        ]);
-    }
-
-    // todo
-    protected function createTag($tag){
-        if(trim($tag)){
-            $this->db->query("INSERT INTO tag", ['title' => trim($tag)]);
-        }
-    }
-
-    // todo
-    protected function addRevisionTag($revision, $tag){
-        $this->db->query("INSERT INTO revision_tag", [
-            'revision_id' => $revision,
-            'tag_id' => $tag
-        ]);
-    }
-
-    // todo
-    protected function addRevisionMedia($revision, $media){
-        $this->db->query("INSERT INTO revision_media", [
-            'revision_id' => $revision,
-            'media_id' => $media
         ]);
     }
 

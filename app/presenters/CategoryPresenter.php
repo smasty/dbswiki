@@ -4,7 +4,7 @@ namespace App\Presenters;
 
 
 use App\Forms\BaseForm;
-use App\Model\ArticleManager;
+use App\Model\TagManager;
 use App\Model\CategoryManager;
 
 class CategoryPresenter extends BasePresenter {
@@ -14,6 +14,12 @@ class CategoryPresenter extends BasePresenter {
      * @inject
      */
     public $categoryManager;
+
+    /**
+     * @var TagManager
+     * @inject
+     */
+    public $tagManager;
 
 
     protected function createComponentCategoryForm(){
@@ -37,7 +43,7 @@ class CategoryPresenter extends BasePresenter {
 
 
     public function createSucceeded($form, $values){
-        if($this->categoryManager->getCategoryByTitle($values->title)){
+        if($this->categoryManager->getByTitle($values->title)){
             $form->addError("Category with this name already exists.", "error");
             return;
         }
@@ -53,11 +59,11 @@ class CategoryPresenter extends BasePresenter {
 
 
     public function renderList() {
-        $this->template->categories = $this->categoryManager->getCategories();
+        $this->template->categories = $this->categoryManager->getAll();
     }
 
     public function renderTags() {
-        $this->template->tags= $this->categoryManager->getTags();
+        $this->template->tags= $this->tagManager->getAll();
     }
 
 

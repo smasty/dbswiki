@@ -9,7 +9,7 @@ use Nette;
 class CategoryManager extends BaseManager {
 
 
-    public function findCategory($id){
+    public function find($id){
         return $this->db->fetch(
             "SELECT c.*, COUNT(a.id) AS count FROM category c ".
             "LEFT JOIN article a ON a.category_id = c.id ".
@@ -19,17 +19,7 @@ class CategoryManager extends BaseManager {
     }
 
 
-    public function findTag($id){
-        return $this->db->fetch(
-            "SELECT t.*, COUNT(a.id) as count FROM tag t ".
-            "JOIN revision_tag rt ON rt.tag_id = t.id ".
-            "JOIN article a ON a.revision_id = rt.revision_id ".
-            "WHERE t.id = ? GROUP BY t.id", $id
-        );
-    }
-
-
-    public function getCategoryByTitle($title){
+    public function getByTitle($title){
         return $this->db->fetch("SELECT id FROM category WHERE title = ?", $title);
     }
 
@@ -50,7 +40,7 @@ class CategoryManager extends BaseManager {
     }
 
 
-    public function getCategories(){
+    public function getAll(){
         return $this->db->query(
             "SELECT c.title, c.description, c.id, COUNT(a.id) AS count FROM category c ".
             "LEFT JOIN article a ON a.category_id = c.id ".
@@ -58,24 +48,7 @@ class CategoryManager extends BaseManager {
         );
     }
 
-    public function getCategoriesPairs(){
+    public function getPairs(){
         return $this->db->fetchPairs("SELECT id, title FROM category ORDER BY title");
     }
-
-
-    public function getTags(){
-        return $this->db->query(
-            "SELECT t.id, t.title, COUNT(a.title) AS count FROM tag t ".
-            "LEFT JOIN revision_tag rt ON rt.tag_id = t.id ".
-            "LEFT JOIN article a ON a.revision_id = rt.revision_id ".
-            "WHERE a.id IS NOT NULL AND t.title != '' ".
-            "GROUP BY t.id, t.title ORDER BY count DESC, t.title"
-        );
-    }
-
-
-    public function getTagsPairs(){
-        return $this->db->fetchPairs("SELECT id, title FROM tag ORDER BY title");
-    }
-
 }

@@ -30,6 +30,7 @@ services:
 	- App\Model\AuthorManager
 	- App\Model\ArticleManager
 	- App\Model\CategoryManager
+	- App\Model\TagManager
 	- App\Model\MediaManager(@Nette\Database\Connection, %mediaTypes%, %fileUploadPath%)
 
 	authenticator: App\Model\Authenticator
