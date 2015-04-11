@@ -18,6 +18,9 @@ class Authorizator extends Security\Permission {
         $this->addResource('Homepage');
         $this->allow('guest', 'Homepage');
 
+        $this->addResource('Error');
+        $this->allow('guest', 'Error');
+
         $this->addResource('User');
         $this->allow('guest', 'User', ['login', 'register']);
         $this->allow('user', 'User', 'logout');

@@ -11,15 +11,20 @@ class ArticleManager extends BaseManager {
 
     /**
      * @var TagManager
-     * @inject
      */
     public $tagManager;
 
     /**
      * @var MediaManager
-     * @inject
      */
     public $mediaManager;
+
+
+    public function __construct(Nette\Database\Connection $conn, TagManager $tag, MediaManager $media){
+        parent::__construct($conn);
+        $this->tagManager = $tag;
+        $this->mediaManager = $media;
+    }
 
 
     public function getAll($limit = NULL, $offset = NULL){
@@ -119,14 +124,14 @@ class ArticleManager extends BaseManager {
             $this->setArticleRevision($aid, $rid);
 
             // Tags handling
-            $allTags = $this->tagManager->getPairs();
+            $allTags = $this->tagManager->getTwistedPairs();
             foreach($tags as $tag){
                 if(!isset($allTags[$tag])){
                     $this->tagManager->createTag($tag);
                 }
             }
 
-            $allTags = $this->tagManager->getPairs();
+            $allTags = $this->tagManager->getTwistedPairs();
             foreach($tags as $tag){
                 $this->tagManager->addRevisionTag($rid, $allTags[$tag]);
             }
@@ -157,14 +162,14 @@ class ArticleManager extends BaseManager {
             $this->setArticleRevision($id, $rid);
 
             // Tags handling
-            $allTags = $this->tagManager->getPairs();
+            $allTags = $this->tagManager->getTwistedPairs();
             foreach($tags as $tag){
                 if(!isset($allTags[$tag])){
                     $this->tagManager->createTag($tag);
                 }
             }
 
-            $allTags = $this->tagManager->getPairs();
+            $allTags = $this->tagManager->getTwistedPairs();
             foreach($tags as $tag){
                 $this->tagManager->addRevisionTag($rid, $allTags[$tag]);
             }
@@ -222,11 +227,11 @@ class ArticleManager extends BaseManager {
     }
 
 
-    protected function setArticleRevision($article, $revision){
+    public function setArticleRevision($article, $revision){
         $this->db->query("UPDATE article SET revision_id = ? WHERE id = ?", $revision, $article);
     }
 
-    protected function insertArticle($title, $category){
+    public function insertArticle($title, $category){
         return $this->db->fetchField("INSERT INTO article ? RETURNING id", [
             'title' => $title,
             'created' => new SqlLiteral("NOW()"),
@@ -234,14 +239,14 @@ class ArticleManager extends BaseManager {
         ]);
     }
 
-    protected function updateArticle($id, $title, $category){
+    public function updateArticle($id, $title, $category){
         return $this->db->fetchField("UPDATE article SET ? WHERE (id = ?)", [
             'title' => $title,
             'category_id' => $category
         ], $id);
     }
 
-    protected function insertRevision($article, $body, $author, $log){
+    public function insertRevision($article, $body, $author, $log){
         return $this->db->fetchField("INSERT INTO revision ? RETURNING id", [
             'created' => new SqlLiteral("NOW()"),
             'log' => $log,

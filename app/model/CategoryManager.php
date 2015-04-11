@@ -14,7 +14,7 @@ class CategoryManager extends BaseManager {
             "SELECT c.*, COUNT(a.id) AS count FROM category c ".
             "LEFT JOIN article a ON a.category_id = c.id ".
             "WHERE c.id = ? ".
-            "GROUP BY c.id", $id
+            "GROUP BY c.id, c.title, c.description", $id
         );
     }
 
@@ -44,7 +44,7 @@ class CategoryManager extends BaseManager {
         return $this->db->query(
             "SELECT c.title, c.description, c.id, COUNT(a.id) AS count FROM category c ".
             "LEFT JOIN article a ON a.category_id = c.id ".
-            "GROUP BY c.id ORDER BY c.title"
+            "GROUP BY c.id, c.title, c.description ORDER BY c.title"
         );
     }
 

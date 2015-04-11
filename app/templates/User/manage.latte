@@ -8,7 +8,6 @@
 
     <thead>
         <tr>
-            <th>ID</th>
             <th>Name</th>
             <th>E-mail</th>
             <th>Role</th>
@@ -20,7 +19,6 @@
     <tbody>
 
         <tr n:foreach="$users as $row">
-            <td>{$row->id}.</td>
             <td><a n:href="Author:show, $row->id">{ucfirst($row->name)}</td>
             <td>
                 <a href="mailto:{$row->mail}">{$row->mail}</a>

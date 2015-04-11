@@ -13,7 +13,7 @@ class TagManager extends BaseManager {
             "SELECT t.*, COUNT(a.id) as count FROM tag t ".
             "JOIN revision_tag rt ON rt.tag_id = t.id ".
             "JOIN article a ON a.revision_id = rt.revision_id ".
-            "WHERE t.id = ? GROUP BY t.id", $id
+            "WHERE t.id = ? GROUP BY t.id, t.title", $id
         );
     }
 
@@ -31,6 +31,10 @@ class TagManager extends BaseManager {
 
     public function getPairs(){
         return $this->db->fetchPairs("SELECT id, title FROM tag ORDER BY title");
+    }
+
+    public function getTwistedPairs(){
+        return $this->db->fetchPairs("SELECT title, id FROM tag ORDER BY title");
     }
 
     public function getTagsForArticles($cid = NULL){
