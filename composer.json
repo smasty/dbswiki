@@ -15,6 +15,7 @@
 		"nette/nette": "~2.3",
 		"kdyby/bootstrap-form-renderer": "@dev",
 		"michelf/php-markdown": "1.5.0",
-		"srigi/nette-visualpaginator": "@dev"
+		"srigi/nette-visualpaginator": "@dev",
+		"kdyby/doctrine": "~2.3"
 	}
 }

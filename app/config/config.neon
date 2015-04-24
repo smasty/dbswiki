@@ -37,3 +37,8 @@ services:
 	authorizator: App\Model\Authorizator
 	router: App\RouterFactory::createRouter
 
+extensions:
+    console: Kdyby\Console\DI\ConsoleExtension
+    events: Kdyby\Events\DI\EventsExtension
+    annotations: Kdyby\Annotations\DI\AnnotationsExtension
+    doctrine: Kdyby\Doctrine\DI\OrmExtension

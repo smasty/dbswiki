@@ -6,6 +6,10 @@ use Nette;
 use Nette\Database\SqlLiteral;
 
 
+/**
+ * Class ArticleManager
+ * @package App\Model
+ */
 class ArticleManager extends BaseManager {
 
 
