@@ -17,20 +17,17 @@
     <tbody>
         <tr n:foreach="$articles as $a">
             <td>
-                <a n:href="Article:show, $a->id">{$a->title}</a>
+                <a n:href="Article:show, $a[0]->id">{$a[0]->title}</a>
             </td>
             <td>
-                {$a->created|date:'M j, Y, H:i:s'}
+                {$a[0]->created|date:'M j, Y, H:i:s'}
             </td>
             <td>
-                {if $a->cid}
-                <a n:href="Article:category, $a->cid">{$a->cname}</a>
+                {if $a[cid]}
+                <a n:href="Article:category, $a[cid]">{$a[cname]}</a>
                 {else}
                     <i>&ndash; none &ndash;</i>
                 {/if}
-            </td>
-            <td>
-                {!$tags[$a->id] ?: "<i>&ndash; none &ndash;</i>"}
             </td>
         </tr>
     </tbody>

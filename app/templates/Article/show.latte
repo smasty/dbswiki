@@ -6,8 +6,8 @@
     {ifset $revision}
         <a n:href="show, $article->id" title="Go to the latest revision">{$article->title}</a>
         <small><br>
-            Revision from {$revision->created|date:'M j, Y, H:i'}
-            by <a n:href="Homepage">{ucfirst($revision->author_name)}</a>.
+            Revision from {$revision[0]->created|date:'M j, Y, H:i'}
+            by <a n:href="Author:show, $revision[author_id]">{ucfirst($revision[author_name])}</a>.
         </small>
     {else}
         {$article->title}
@@ -33,10 +33,10 @@
 {/if}
 
 <p>
-    Category: <a n:href="Article:category, $article->categoryId">{$article->category}</a><br>
+    Category: <a n:href="Article:category, $article->category->id">{$article->category->title}</a><br>
     Tags:
-    {foreach $article->tags as $id => $tag}
-        <a n:href="tag, $id" class="badge badge-success">{$tag}</a>
+    {foreach $article->revision->tags as $tag}
+        <a n:href="tag, $tag->id" class="badge badge-success">{$tag->title}</a>
     {/foreach}
 </p>
 
@@ -44,5 +44,5 @@
 <div class="article-content">
 
 
-    {!Michelf\Markdown::defaultTransform($article->body)}
+    {!Michelf\Markdown::defaultTransform($article->revision->body)}
 </div>

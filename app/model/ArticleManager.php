@@ -3,6 +3,7 @@
 namespace App\Model;
 
 use App\Model\Entity\Article;
+use App\Model\Entity\Revision;
 use Kdyby\Doctrine\EntityManager;
 use Nette;
 use Nette\Database\SqlLiteral;
@@ -25,30 +26,41 @@ class ArticleManager extends BaseManager {
      */
     private $mediaManager;
 
+    /**
+     * @var \Kdyby\Doctrine\EntityRepository
+     */
     private $repository;
+
+    /**
+     * @var \Kdyby\Doctrine\EntityRepository
+     */
+    private $revisionRepository;
 
 
     public function __construct(EntityManager $em, TagManager $tag, MediaManager $media){
         parent::__construct($em);
         $this->repository = $em->getRepository(Article::class);
+        $this->revisionRepository = $em->getRepository(Revision::class);
         $this->tagManager = $tag;
         $this->mediaManager = $media;
     }
 
 
     public function getAll($limit = NULL, $offset = NULL){
-        /*return $this->db->query(
-            "SELECT a.id, a.title, a.created, c.title AS cname, c.id AS cid FROM article a ".
-            "LEFT JOIN revision r ON a.revision_id = r.id ".
-            "LEFT JOIN category c ON a.category_id = c.id ".
-            "ORDER BY a.title ".
-            ($limit !== NULL ? ("LIMIT $limit" . ($offset !== NULL ? " OFFSET $offset" : "")) : "")
-        );*/
+        return $this->repository->createQueryBuilder('a')
+            ->addSelect('a, c.title AS cname, c.id AS cid')
+            ->leftJoin('a.category', 'c')
+            ->leftJoin('a.revision', 'r')
+            ->orderBy('a.title')
+            ->setMaxResults($limit)
+            ->setFirstResult($offset)
+            ->getQuery()->getResult();
     }
 
 
     public function getCount(){
-        return $this->db->fetchField("SELECT COUNT(*) FROM article");
+        return (int) $this->repository->countBy([]);
+        //return $this->db->fetchField("SELECT COUNT(*) FROM article");
     }
 
 
@@ -65,38 +77,50 @@ class ArticleManager extends BaseManager {
     }
 
 
-    public function getByCategory($cid){
-        return $this->db->query(
-            "SELECT id, title, created FROM article WHERE category_id = ? ".
-            "ORDER BY title", $cid
-        );
-    }
-
-
     public function searchByTitle($query){
-        return $this->db->query(
+        return $this->repository->createQueryBuilder('a')
+            ->addSelect('a, c.title AS cname, c.id AS cid')
+            ->leftJoin('a.category', 'c')
+            ->leftJoin('a.revision', 'r')
+            ->where('a.title LIKE ?1')
+            ->orWhere('r.body LIKE ?1')
+            ->orderBy('a.title')
+            ->setParameter(1, "%$query%")
+            ->getQuery()->getResult();
+        /*return $this->db->query(
             "SELECT a.id, a.title, a.created, c.title AS cname, c.id AS cid FROM article a ".
             "LEFT JOIN category c ON a.category_id = c.id ".
             "LEFT JOIN revision r ON a.revision_id = r.id ".
             "WHERE a.title ILIKE ? OR r.body ILIKE ? ".
             "ORDER BY a.title", "%$query%", "%$query%"
-        );
+        );*/
     }
 
 
     public function getByTag($tid){
-        return $this->db->query(
-            "SELECT a.id, a.title, a.created, c.id AS cid, c.title AS cname FROM article a ".
-            "LEFT JOIN revision_tag rt ON rt.revision_id = a.revision_id ".
-            "LEFT JOIN category c ON a.category_id = c.id ".
-            "WHERE rt.tag_id = ? ".
-            "ORDER BY a.title", $tid
-        );
+        return $this->repository->createQueryBuilder('a')
+            ->addSelect('a, c.title AS cname, c.id AS cid')
+            ->leftJoin('a.category', 'c')
+            ->leftJoin('a.revision', 'r')
+            ->leftJoin('r.tags', 't')
+            ->where('t.id = ?1')
+            ->orderBy('a.title')
+            ->setParameter(1, $tid)
+            ->getQuery()->getResult();
     }
 
 
     public function getArticleRevision($id, $rev){
-        $row = $this->db->fetch(
+        $rows =  $this->revisionRepository->createQueryBuilder('r')
+            ->addSelect('author.name AS author_name, author.id AS author_id')
+            ->leftJoin('r.article', 'a')
+            ->leftJoin('r.author', 'author')
+            ->where('r.id = ?1')
+            ->andWhere('a.id = ?2')
+            ->setParameters([1 => $rev, $id])
+            ->getQuery()->getResult();
+        return count($rows) > 0 ? $rows[0] : false;
+        /*$row = $this->db->fetch(
             "SELECT a.id, a.title, a.created, r.body, c.title AS cname, c.id AS cid, a.revision_id FROM article a ".
             "LEFT JOIN revision r ON a.id = r.article_id ".
             "LEFT JOIN category c ON a.category_id = c.id ".
@@ -106,21 +130,35 @@ class ArticleManager extends BaseManager {
             "SELECT r.*, a.name AS author_name FROM revision r ".
             "LEFT JOIN author a ON a.id = r.author_id  WHERE r.id = ?"
             , $rev);
-        return $row ? new Article($this->db, $row, $revision) : false;
+        return $row ? new Article($this->db, $row, $revision) : false;*/
     }
 
 
     public function getRevisions($id, $limit, $offset){
-        return $this->db->query(
+        return $this->revisionRepository->createQueryBuilder('r')
+            ->addSelect('a.name AS author_name, a.id AS author_id')
+            ->leftJoin('r.author', 'a')
+            ->where('IDENTITY(r.article) = ?1')
+            ->orderBy('r.created', 'DESC')
+            ->setMaxResults($limit)
+            ->setFirstResult($offset)
+            ->setParameter(1, $id)
+            ->getQuery()->getResult();
+        /*return $this->db->query(
             "SELECT r.*, a.name AS author_name FROM revision r ".
             "LEFT JOIN author a ON a.id = r.author_id ".
             "WHERE r.article_id = ? ORDER BY r.created DESC LIMIT ? OFFSET ?", $id, $limit, $offset
-        );
+        );*/
 
     }
 
     public function getRevisionCount($id){
-        return $this->db->fetchField("SELECT COUNT(*) FROM revision WHERE article_id = ?", $id);
+        return count($this->find($id)->revisions);
+        /*return $this->repository->createQueryBuilder('a')
+            ->select('COUNT(a.id)')
+            ->leftJoin('a.revisions', 'r')
+            ->getQuery()->getResult();*/
+        //return $this->db->fetchField("SELECT COUNT(*) FROM revision WHERE article_id = ?", $id);
     }
 
 

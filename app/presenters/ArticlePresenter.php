@@ -6,7 +6,6 @@ namespace App\Presenters;
 use App\Forms\BaseForm;
 use App\Model\ArticleManager;
 use App\Model\CategoryManager;
-use App\Model\Entity\Article;
 use App\Model\TagManager;
 use App\Model\MediaManager;
 
@@ -39,12 +38,13 @@ class ArticlePresenter extends BasePresenter {
 
     public function renderShow($id, $rev = NULL){
         if($rev !== NULL){
-            $article = $this->articleManager->getArticleRevision($id, $rev);
-            if($article === false){
+            $revision = $this->articleManager->getArticleRevision($id, $rev);
+            if(!$revision){
                 $this->flashMessage("Incorrect revision ID #$rev.", "error");
                 $this->redirect("show", $id, null);
             }
-            $this->template->revision = $article->revision;
+            $this->template->revision = $revision;
+            $article = $revision[0]->article;
         } else {
             $article = $this->articleManager->find($id);
         }
@@ -54,7 +54,7 @@ class ArticlePresenter extends BasePresenter {
         }
 
         $this->template->article = $article;
-        $this->template->media = $this->mediaManager->getByRevision($article->revisionId)->fetchAll();
+        $this->template->media = $this->mediaManager->getByRevision($article->revision->id);
     }
 
 
@@ -120,12 +120,20 @@ class ArticlePresenter extends BasePresenter {
             ->setRequired("Revision summary is required.")
             ->setAttribute('class', 'input-xxlarge');
 
+        $tags = [];
+        foreach($article->revision->tags as $t){
+            $tags[] = $t->title;
+        }
+        $media = [];
+        foreach($article->revision->medias as $m){
+            $media[] = $m->id;
+        }
         $this['articleForm']->setDefaults([
             'title' => $article->title,
-            'body' => $article->body,
-            'category' => $article->categoryId,
-            'tags' => implode(", ", $article->tags),
-            'media' => array_keys($article->media),
+            'body' => $article->revision->body,
+            'category' => $article->category->id,
+            'tags' => implode(", ", $tags),
+            'media' => $media,
         ]);
 
         $this['articleForm']->addSubmit('send2', 'Edit')->setAttribute('class', 'btn-primary btn-large');
@@ -183,7 +191,6 @@ class ArticlePresenter extends BasePresenter {
 
         $this->template->article = $article;
         $this->template->revisions = $this->articleManager->getRevisions($id, $vp->paginator->itemsPerPage, $vp->paginator->offset);
-        $this->template->tags = $this->tagManager->getTagsForArticleRevisions($id);
     }
 
 
@@ -213,8 +220,8 @@ class ArticlePresenter extends BasePresenter {
         }
 
         $this->template->category = $category;
-        $this->template->articles = $this->articleManager->getByCategory($id);
-        $this->template->tags = $this->tagManager->getTagsForArticles($id);
+        $this->template->articles = $category->articles;
+        //$this->template->tags = $this->tagManager->getTagsForArticles($id);
     }
 
 
@@ -238,7 +245,6 @@ class ArticlePresenter extends BasePresenter {
         }
         $this->template->query = $query;
         $this->template->articles = $this->articleManager->searchByTitle($query);
-        $this->template->tags = $this->tagManager->getTagsForArticles();
     }
 
 

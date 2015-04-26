@@ -31,7 +31,7 @@ class HomepagePresenter extends BasePresenter{
 
 		$this->template->articles = $this->articleManager
             ->getAll($vp->paginator->itemsPerPage, $vp->paginator->offset);
-		$this->template->tags = $this->tagManager->getTagsForArticles();
+		//$this->template->tags = $this->tagManager->getTagsForArticles();
 	}
 
 }

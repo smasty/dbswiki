@@ -5,7 +5,7 @@
     Tag: {$tag->title}
 </h1>
 
-<h2>Articles ({$tag->count})</h2>
+<h2>Articles ({count($articles)})</h2>
 
 <table class="table table-bordered table-striped table-hover">
     <thead>
@@ -18,13 +18,13 @@
     <tbody>
         <tr n:foreach="$articles as $a">
             <td>
-                <a n:href="Article:show, $a->id">{$a->title}</a>
+                <a n:href="Article:show, $a[0]->id">{$a[0]->title}</a>
             </td>
             <td>
-                {$a->created|date:'M j, Y, H:i:s'}
+                {$a[0]->created|date:'M j, Y, H:i:s'}
             </td>
             <td>
-                <a n:href="Article:category, $a->cid">{$a->cname}</a>
+                <a n:href="Article:category, $a[cid]">{$a[cname]}</a>
             </td>
         </tr>
     </tbody>

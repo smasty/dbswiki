@@ -2,7 +2,9 @@
 
 namespace App\Model;
 
+use App\Model\Entity\Media;
 use Exception;
+use Kdyby\Doctrine\EntityManager;
 use Nette;
 
 
@@ -11,8 +13,14 @@ class MediaManager extends BaseManager {
     private $mediaTypes;
     private $targetPath;
 
-    public function __construct(Nette\Database\Connection $conn, array $mediaTypes, $targetPath){
-        parent::__construct($conn);
+    /**
+     * @var \Kdyby\Doctrine\EntityRepository
+     */
+    private $repository;
+
+    public function __construct(EntityManager $em, array $mediaTypes, $targetPath){
+        parent::__construct($em);
+        $this->repository = $em->getRepository(Media::class);
         $this->mediaTypes = $mediaTypes;
         $this->targetPath = $targetPath;
     }
@@ -29,20 +37,27 @@ class MediaManager extends BaseManager {
 
 
     public function getAll(){
-        return $this->db->query("SELECT * FROM media ORDER BY title");
+        return $this->repository->findBy([], ['title' => 'ASC']);
+        //return $this->db->query("SELECT * FROM media ORDER BY title");
     }
 
     public function getPairs(){
-        return $this->db->fetchPairs("SELECT id, title FROM media ORDER BY title");
+        return $this->repository->findPairs('title', ['title' => 'ASC'], 'id');
+        //return $this->db->fetchPairs("SELECT id, title FROM media ORDER BY title");
     }
 
 
     public function getByRevision($rid){
-        return $this->db->query(
+        return $this->repository->createQueryBuilder('m')
+            ->leftJoin('m.articles', 'r')
+            ->where('r.id = ?1')
+            ->setParameter(1, $rid)
+            ->getQuery()->getResult();
+        /*return $this->db->query(
             "SELECT m.title, m.path, m.type FROM revision_media rm ".
             "LEFT JOIN media m ON rm.media_id = m.id ".
             "WHERE rm.revision_id = ? ORDER BY m.title", $rid
-        );
+        );*/
     }
 
 

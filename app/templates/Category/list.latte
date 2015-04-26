@@ -22,13 +22,13 @@
     <tbody>
         <tr n:foreach="$categories as $cat">
             <td>
-                <a n:href="Article:category, $cat->id">{$cat->title}</a>
+                <a n:href="Article:category, $cat[0]->id">{$cat[0]->title}</a>
             </td>
             <td>
-                {$cat->description|nl2br}
+                {$cat[0]->description|nl2br}
             </td>
             <th>
-                {$cat->count}
+                {$cat[article_count]}
             </th>
         </tr>
     </tbody>

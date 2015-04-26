@@ -15,10 +15,10 @@
     <tbody>
         <tr n:foreach="$tags as $tag">
             <td>
-                <a n:href="Article:tag, $tag->id">{$tag->title}</a>
+                <a n:href="Article:tag, $tag[0]->id">{$tag[0]->title}</a>
             </td>
             <td style="text-align:right">
-                {$tag->count}
+                {$tag[article_count]}
             </td>
         </tr>
     </tbody>

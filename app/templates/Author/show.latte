@@ -1,8 +1,7 @@
 {block content}
 
-
 <h1 n:block=title>
-    Author: {ucfirst($author->name)}
+    Author: {ucfirst($author[name])}
 </h1>
 
 <table class="table table-bordered table-striped table-hover table-condensed table-author">
@@ -10,27 +9,27 @@
     <tbody>
         <tr>
             <th>Role:</th>
-            <td>{ucfirst($author->role)}</td>
+            <td>{ucfirst($author[role])}</td>
         </tr>
         <tr>
             <th>E-mail:</th>
-            <td><a href="mailto:{$author->mail}">{$author->mail}</a></td>
+            <td><a href="mailto:{$author[mail]}">{$author[mail]}</a></td>
         </tr>
         <tr>
             <th>Authored articles:</th>
-            <td>{$author->articles}</td>
+            <td>{$author[articles]}</td>
         </tr>
         <tr>
             <th>Authored revisions:</th>
-            <td>{$author->revisions}</td>
+            <td>{$author[revisions]}</td>
         </tr>
         <tr>
             <th>Contributed categories:</th>
-            <td>{$author->categories}</td>
+            <td>{$author[categories]}</td>
         </tr>
         <tr>
             <th>Latest revision:</th>
-            <td>{$author->latest|date:'M j, Y H:i'}</td>
+            <td>{$author[latest]|date:'M j, Y H:i'}</td>
         </tr>
     </tbody>
 </table>
@@ -51,16 +50,16 @@
     <tbody>
         <tr n:foreach="$articles as $a">
             <td>
-                <a n:href="Article:show, $a->id">{$a->title}</a>
+                <a n:href="Article:show, $a[id]">{$a[title]}</a>
             </td>
             <th>
-                {$a->count}
+                {$a[counts]}
             </th>
             <td>
-                {$a->latest|date:'M j, Y, H:i'}
+                {$a[latest]|date:'M j, Y, H:i'}
             </td>
             <td>
-                <a n:href="Article:category, $a->cid">{$a->cname}</a>
+                <a n:href="Article:category, $a[cid]">{$a[cname]}</a>
             </td>
         </tr>
     </tbody>

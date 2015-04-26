@@ -7,14 +7,13 @@
 
 <p>{$category->description|nl2br}</p>
 
-<h2>Articles ({$category->count})</h2>
+<h2>Articles ({count($articles)})</h2>
 
 <table class="table table-bordered table-striped table-hover">
     <thead>
         <tr>
             <th>Article</th>
             <th>Date created</th>
-            <th>Tags</th>
         </tr>
     </thead>
     <tbody>
@@ -24,9 +23,6 @@
             </td>
             <td>
                 {$a->created|date:'M j, Y, H:i:s'}
-            </td>
-            <td>
-                {!$tags[$a->id] ?: "<i>&ndash; none &ndash;</i>"}
             </td>
         </tr>
     </tbody>

@@ -35,8 +35,12 @@ class Authenticator extends Nette\Object implements Security\IAuthenticator
             throw new Security\AuthenticationException('Login credentials invalid.', self::INVALID_CREDENTIAL);
         }
 
-        $array = (array) $row;
+        $array = [];
+        foreach((array) $row as $k=>$v){
+            $array[str_replace("\x00*\x00", "", $k)] = $v;
+        }
         unset($array['password']);
+        unset($array['revisions']);
 		return new Security\Identity($row->id, $row->role, $array);
 
 	}

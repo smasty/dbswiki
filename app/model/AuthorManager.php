@@ -2,33 +2,44 @@
 
 namespace App\Model;
 
+use App\Model\Entity\Author;
+use App\Model\Entity\Revision;
 use Exception;
+use Kdyby\Doctrine\EntityManager;
 use Nette;
 
 
 class AuthorManager extends BaseManager {
 
+    private $repository;
+
+    function __construct(EntityManager $em) {
+        parent::__construct($em);
+        $this->repository = $em->getRepository(Author::class);
+    }
+
 
     /**
-     * @return bool|Nette\Database\Row
+     * @return bool|Author
      */
     public function find($id){
-        return $this->db->fetch("SELECT * FROM author WHERE id = ?", $id);
+        return $this->repository->find($id);
     }
 
     /**
-     * @return bool|Nette\Database\Row
+     * @return bool|Author
      */
     public function getByName($name){
-        return $this->db->fetch("SELECT * FROM author WHERE name = ?", $name);
+        $row = $this->repository->findOneBy(['name' => $name]);
+        return $row ? $row : false;
     }
 
 
     /**
-     * @return Nette\Database\ResultSet
+     * @return array
      */
     public function getAll(){
-        return $this->db->query("SELECT * FROM author ORDER BY name");
+        return $this->repository->findBy([], ['name' => 'ASC']);
     }
 
 
@@ -82,16 +93,43 @@ class AuthorManager extends BaseManager {
     }
 
     public function getArticles($aid){
-        return $this->db->query(
+        return $this->em->getRepository(Revision::class)->createQueryBuilder('r')
+            ->select('a.id, a.title, COUNT(r.id) AS counts, MAX(r.created) AS latest, c.id AS cid, c.title AS cname')
+            ->leftJoin('r.article', 'a')
+            ->leftJoin('a.category', 'c')
+            ->where('IDENTITY(r.author) = ?1')
+            ->groupBy('a.id, c.id')
+            ->orderBy('counts', 'DESC')
+            ->addOrderBy('a.title')
+            ->setParameter(1, $aid)
+            ->getQuery()->getResult();
+        /*return $this->db->query(
             "SELECT a.id, a.title, COUNT(r.id) AS count, MAX(r.created) AS latest, c.id AS cid, c.title AS cname FROM revision r ".
             "LEFT JOIN article a ON r.article_id = a.id ".
             "LEFT JOIN category c ON a.category_id = c.id ".
             "WHERE r.author_id = ? GROUP BY a.id, c.id, a.title, c.title ORDER BY count DESC, a.title", $aid
-        );
+        );*/
     }
 
     public function getInfo($id = NULL){
-        $query = $this->db->query(
+        $query = $this->em->getRepository(Revision::class)->createQueryBuilder('r')
+            ->select(
+                'a.id, a.name, a.mail, a.role, COUNT(DISTINCT r.article) AS articles, COUNT(DISTINCT r.id) AS revisions, '.
+                'COUNT(DISTINCT c.id) AS categories, MAX(r.created) AS latest'
+            )
+            ->leftJoin('r.article', 'p')
+            ->leftJoin('p.category', 'c')
+            ->leftJoin('r.author', 'a')
+            ->groupBy('a.id')->having('COUNT(r.id) > 0')
+            ->orderBy('a.name');
+
+        if($id !== NULL){
+            $query->where('a.id = ?1')->setParameter(1, $id);
+        }
+
+        $result = $query->getQuery()->getResult();
+        return $id !== NULL ? (isset($result[0]) ? $result[0] : false) : $result;
+        /*$query = $this->db->query(
             "SELECT a.id, a.name, a.mail, a.role, ".
             "COUNT(DISTINCT r.article_id) AS articles, COUNT(DISTINCT r.id) AS revisions, ".
             "COUNT(DISTINCT c.id) AS categories, MAX(r.created) AS latest ".
@@ -103,7 +141,7 @@ class AuthorManager extends BaseManager {
             "GROUP BY a.id, a.name, a.mail, a.role HAVING COUNT(r.id) > 0 ORDER BY a.name"
         );
 
-        return $id !== NULL ? $query->fetch() : $query;
+        return $id !== NULL ? $query->fetch() : $query;*/
     }
 
 }

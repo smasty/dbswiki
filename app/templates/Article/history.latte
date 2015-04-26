@@ -14,38 +14,34 @@
             <th>Revision ID</th>
             <th>Date created</th>
             <th>Author</th>
-            <th>Tags</th>
             <th>Summary</th>
             <th>Actions</th>
         </tr>
     </thead>
     <tbody>
-        <tr n:foreach="$revisions as $rev" n:class="$rev->id == $article->revisionId ? 'active'">
+        <tr n:foreach="$revisions as $rev" n:class="$rev[0]->id == $article->revision->id ? 'active'">
             <th>
-                {$rev->id}
+                {$rev[0]->id}
             </th>
             <td>
-                {$rev->created|date:'M j, Y, H:i:s'}
+                {$rev[0]->created|date:'M j, Y, H:i:s'}
             </td>
             <td>
-                <a n:href="Author:show, $rev->author_id">{ucfirst($rev->author_name)}</a>
+                <a n:href="Author:show, $rev[author_id]">{ucfirst($rev[author_name])}</a>
             </td>
             <td>
-                {isset($tags[$rev->id]) ? $tags[$rev->id]}
+                {$rev[0]->log|nl2br}
             </td>
             <td>
-                {$rev->log|nl2br}
-            </td>
-            <td>
-                <a n:href="show, $article->id, $rev->id" class="btn btn-primary">
+                <a n:href="show, $article->id, $rev[0]->id" class="btn btn-primary">
                     <i class="icon-white icon-book"></i> View
                 </a>
-                {if $rev->id == $article->revisionId}
+                {if $rev[0]->id == $article->revision->id}
                 <a href="#" class="btn disabled" onclick="return false">
                     <i class="icon-retweet"></i> Current
                 </a>
                 {else}
-                <a n:href="revert, $article->id, $rev->id" class="btn btn-warning" onclick="return confirm('Are you sure?')">
+                <a n:href="revert, $article->id, $rev[0]->id" class="btn btn-warning" onclick="return confirm('Are you sure?')">
                     <i class="icon-white icon-retweet"></i> Revert
                 </a>
                 {/if}

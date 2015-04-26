@@ -31,7 +31,7 @@ services:
 	- App\Model\CategoryManager
 	- App\Model\AuthorManager
 	- App\Model\ArticleManager
-	- App\Model\MediaManager(@Nette\Database\Connection, %mediaTypes%, %fileUploadPath%)
+	- App\Model\MediaManager(@Kdyby\Doctrine\EntityManager, %mediaTypes%, %fileUploadPath%)
 
 	authenticator: App\Model\Authenticator
 	authorizator: App\Model\Authorizator
