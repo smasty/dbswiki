@@ -2,6 +2,8 @@
 
 namespace App\Model;
 
+use App\Model\Entity\Article;
+use Kdyby\Doctrine\EntityManager;
 use Nette;
 use Nette\Database\SqlLiteral;
 
@@ -16,29 +18,32 @@ class ArticleManager extends BaseManager {
     /**
      * @var TagManager
      */
-    public $tagManager;
+    private $tagManager;
 
     /**
      * @var MediaManager
      */
-    public $mediaManager;
+    private $mediaManager;
+
+    private $repository;
 
 
-    public function __construct(Nette\Database\Connection $conn, TagManager $tag, MediaManager $media){
-        parent::__construct($conn);
+    public function __construct(EntityManager $em, TagManager $tag, MediaManager $media){
+        parent::__construct($em);
+        $this->repository = $em->getRepository(Article::class);
         $this->tagManager = $tag;
         $this->mediaManager = $media;
     }
 
 
     public function getAll($limit = NULL, $offset = NULL){
-        return $this->db->query(
+        /*return $this->db->query(
             "SELECT a.id, a.title, a.created, c.title AS cname, c.id AS cid FROM article a ".
             "LEFT JOIN revision r ON a.revision_id = r.id ".
             "LEFT JOIN category c ON a.category_id = c.id ".
             "ORDER BY a.title ".
             ($limit !== NULL ? ("LIMIT $limit" . ($offset !== NULL ? " OFFSET $offset" : "")) : "")
-        );
+        );*/
     }
 
 
@@ -48,13 +53,15 @@ class ArticleManager extends BaseManager {
 
 
     public function find($id){
-        $row = $this->db->fetch(
+        $article = $this->repository->find($id);
+        return $article ?: false;
+        /*$row = $this->db->fetch(
             "SELECT a.id, a.title, a.created, r.body, c.title AS cname, c.id AS cid, a.revision_id FROM article a ".
             "LEFT JOIN revision r ON a.revision_id = r.id ".
             "LEFT JOIN category c ON a.category_id = c.id ".
             "WHERE (a.id = ?)", $id
         );
-        return $row ? new Article($this->db, $row) : false;
+        return $row ? new Article($this->db, $row) : false;*/
     }
 
 

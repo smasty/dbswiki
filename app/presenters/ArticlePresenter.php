@@ -6,6 +6,7 @@ namespace App\Presenters;
 use App\Forms\BaseForm;
 use App\Model\ArticleManager;
 use App\Model\CategoryManager;
+use App\Model\Entity\Article;
 use App\Model\TagManager;
 use App\Model\MediaManager;
 

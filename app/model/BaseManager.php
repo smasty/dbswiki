@@ -1,23 +1,24 @@
 <?php
 
 namespace App\Model;
+use Kdyby\Doctrine\EntityManager;
 use Nette;
 
 
 abstract class BaseManager extends Nette\Object {
 
     /**
-     * @var Nette\Database\Connection
+     * @var EntityManager
      */
-    protected $db;
+    protected $em;
 
-    function __construct(Nette\Database\Connection $db){
-        $this->db = $db;
+    function __construct(EntityManager $em){
+        $this->em = $em;
     }
 
 
-    public function getConnection(){
-        return $this->db;
+    public function getEntityManager(){
+        return $this->em;
     }
 
 }
