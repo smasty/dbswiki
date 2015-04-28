@@ -60,20 +60,12 @@ class ArticleManager extends BaseManager {
 
     public function getCount(){
         return (int) $this->repository->countBy([]);
-        //return $this->db->fetchField("SELECT COUNT(*) FROM article");
     }
 
 
     public function find($id){
         $article = $this->repository->find($id);
         return $article ?: false;
-        /*$row = $this->db->fetch(
-            "SELECT a.id, a.title, a.created, r.body, c.title AS cname, c.id AS cid, a.revision_id FROM article a ".
-            "LEFT JOIN revision r ON a.revision_id = r.id ".
-            "LEFT JOIN category c ON a.category_id = c.id ".
-            "WHERE (a.id = ?)", $id
-        );
-        return $row ? new Article($this->db, $row) : false;*/
     }
 
 
@@ -87,13 +79,6 @@ class ArticleManager extends BaseManager {
             ->orderBy('a.title')
             ->setParameter(1, "%$query%")
             ->getQuery()->getResult();
-        /*return $this->db->query(
-            "SELECT a.id, a.title, a.created, c.title AS cname, c.id AS cid FROM article a ".
-            "LEFT JOIN category c ON a.category_id = c.id ".
-            "LEFT JOIN revision r ON a.revision_id = r.id ".
-            "WHERE a.title ILIKE ? OR r.body ILIKE ? ".
-            "ORDER BY a.title", "%$query%", "%$query%"
-        );*/
     }
 
 
@@ -120,17 +105,6 @@ class ArticleManager extends BaseManager {
             ->setParameters([1 => $rev, $id])
             ->getQuery()->getResult();
         return count($rows) > 0 ? $rows[0] : false;
-        /*$row = $this->db->fetch(
-            "SELECT a.id, a.title, a.created, r.body, c.title AS cname, c.id AS cid, a.revision_id FROM article a ".
-            "LEFT JOIN revision r ON a.id = r.article_id ".
-            "LEFT JOIN category c ON a.category_id = c.id ".
-            "WHERE (a.id = ?) AND (r.id = ?)", $id, $rev
-        );
-        $revision = $this->db->fetch(
-            "SELECT r.*, a.name AS author_name FROM revision r ".
-            "LEFT JOIN author a ON a.id = r.author_id  WHERE r.id = ?"
-            , $rev);
-        return $row ? new Article($this->db, $row, $revision) : false;*/
     }
 
 
@@ -144,21 +118,11 @@ class ArticleManager extends BaseManager {
             ->setFirstResult($offset)
             ->setParameter(1, $id)
             ->getQuery()->getResult();
-        /*return $this->db->query(
-            "SELECT r.*, a.name AS author_name FROM revision r ".
-            "LEFT JOIN author a ON a.id = r.author_id ".
-            "WHERE r.article_id = ? ORDER BY r.created DESC LIMIT ? OFFSET ?", $id, $limit, $offset
-        );*/
 
     }
 
     public function getRevisionCount($id){
         return count($this->find($id)->revisions);
-        /*return $this->repository->createQueryBuilder('a')
-            ->select('COUNT(a.id)')
-            ->leftJoin('a.revisions', 'r')
-            ->getQuery()->getResult();*/
-        //return $this->db->fetchField("SELECT COUNT(*) FROM revision WHERE article_id = ?", $id);
     }
 
 

@@ -38,12 +38,10 @@ class MediaManager extends BaseManager {
 
     public function getAll(){
         return $this->repository->findBy([], ['title' => 'ASC']);
-        //return $this->db->query("SELECT * FROM media ORDER BY title");
     }
 
     public function getPairs(){
         return $this->repository->findPairs('title', ['title' => 'ASC'], 'id');
-        //return $this->db->fetchPairs("SELECT id, title FROM media ORDER BY title");
     }
 
 
@@ -53,11 +51,6 @@ class MediaManager extends BaseManager {
             ->where('r.id = ?1')
             ->setParameter(1, $rid)
             ->getQuery()->getResult();
-        /*return $this->db->query(
-            "SELECT m.title, m.path, m.type FROM revision_media rm ".
-            "LEFT JOIN media m ON rm.media_id = m.id ".
-            "WHERE rm.revision_id = ? ORDER BY m.title", $rid
-        );*/
     }
 
 

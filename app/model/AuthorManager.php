@@ -103,12 +103,6 @@ class AuthorManager extends BaseManager {
             ->addOrderBy('a.title')
             ->setParameter(1, $aid)
             ->getQuery()->getResult();
-        /*return $this->db->query(
-            "SELECT a.id, a.title, COUNT(r.id) AS count, MAX(r.created) AS latest, c.id AS cid, c.title AS cname FROM revision r ".
-            "LEFT JOIN article a ON r.article_id = a.id ".
-            "LEFT JOIN category c ON a.category_id = c.id ".
-            "WHERE r.author_id = ? GROUP BY a.id, c.id, a.title, c.title ORDER BY count DESC, a.title", $aid
-        );*/
     }
 
     public function getInfo($id = NULL){
@@ -129,19 +123,6 @@ class AuthorManager extends BaseManager {
 
         $result = $query->getQuery()->getResult();
         return $id !== NULL ? (isset($result[0]) ? $result[0] : false) : $result;
-        /*$query = $this->db->query(
-            "SELECT a.id, a.name, a.mail, a.role, ".
-            "COUNT(DISTINCT r.article_id) AS articles, COUNT(DISTINCT r.id) AS revisions, ".
-            "COUNT(DISTINCT c.id) AS categories, MAX(r.created) AS latest ".
-            "FROM revision r ".
-            "LEFT JOIN article p ON p.id = r.article_id ".
-            "LEFT JOIN category c ON c.id = p.category_id ".
-            "LEFT JOIN author a ON a.id = r.author_id ".
-            ($id !== NULL ? "WHERE a.id = $id " : "").
-            "GROUP BY a.id, a.name, a.mail, a.role HAVING COUNT(r.id) > 0 ORDER BY a.name"
-        );
-
-        return $id !== NULL ? $query->fetch() : $query;*/
     }
 
 }

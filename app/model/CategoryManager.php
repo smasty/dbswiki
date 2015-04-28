@@ -23,12 +23,6 @@ class CategoryManager extends BaseManager {
 
     public function find($id){
         return $this->repository->find($id);
-        /*return $this->db->fetch(
-            "SELECT c.*, COUNT(a.id) AS count FROM category c ".
-            "LEFT JOIN article a ON a.category_id = c.id ".
-            "WHERE c.id = ? ".
-            "GROUP BY c.id, c.title, c.description", $id
-        );*/
     }
 
 
@@ -39,11 +33,6 @@ class CategoryManager extends BaseManager {
             ->orderBy('c.title')
             ->groupBy('c.id')
             ->getQuery()->getResult();
-        /*return $this->db->query(
-            "SELECT c.title, c.description, c.id, COUNT(a.id) AS count FROM category c ".
-            "LEFT JOIN article a ON a.category_id = c.id ".
-            "GROUP BY c.id, c.title, c.description ORDER BY c.title"
-        );*/
     }
 
 
@@ -53,22 +42,26 @@ class CategoryManager extends BaseManager {
 
     public function getPairs(){
         return $this->repository->findPairs('title', ['title' => 'ASC'], 'id');
-        //return $this->db->fetchPairs("SELECT id, title FROM category ORDER BY title");
     }
 
 
     public function addCategory($title, $description){
-        $this->db->beginTransaction();
-        try{
-            $this->db->query("INSERT INTO category", [
-                'title' => $title,
-                'description' => $description
-            ]);
-        } catch(\Exception $e){
-            $this->db->rollBack();
+
+        $this->em->connection->beginTransaction();
+        try {
+            $cat = new Category();
+            $cat->title = $title;
+            $cat->description = $description;
+
+            $this->em->persist($cat);
+            $this->em->flush();
+            $this->em->connection->commit();
+            return true;
+        } catch (Exception $e) {
+            $this->em->connection->rollback();
+            $this->em->close();
             return false;
         }
-        $this->db->commit();
-        return true;
+
     }
 }
