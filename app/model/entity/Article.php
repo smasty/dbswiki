@@ -42,4 +42,13 @@ class Article extends BaseEntity {
      */
     protected $revisions;
 
+
+    public function toArray(){
+        return [
+            'id' => $this->id,
+            'title' => $this->title,
+            'created' => $this->created,
+        ];
+    }
+
 }

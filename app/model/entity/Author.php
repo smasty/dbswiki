@@ -9,7 +9,7 @@ use Kdyby\Doctrine\Entities\BaseEntity;
 /**
  * @ORM\Entity()
  */
-class Author extends BaseEntity{
+class Author extends BaseEntity {
 
     use Identifier;
 
@@ -44,5 +44,17 @@ class Author extends BaseEntity{
      * @var \Traversable
      */
     protected $revisions;
+
+
+    public function toArray(){
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+            'password' => $this->password,
+            'mail' => $this->mail,
+            'joined' => $this->joined,
+            'role' => $this->role,
+        ];
+    }
 
 }

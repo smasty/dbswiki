@@ -40,4 +40,15 @@ class Media extends BaseEntity {
      */
     protected $articles;
 
+
+    public function toArray(){
+        return [
+            'id' => $this->id,
+            'title' => $this->title,
+            'type' => $this->type,
+            'path' => $this->path,
+            'created' => $this->created,
+        ];
+    }
+
 }

@@ -55,4 +55,14 @@ class Revision extends BaseEntity{
     protected $medias;
 
 
+    public function toArray(){
+        return [
+            'id' => $this->id,
+            'created' => $this->created,
+            'log' => $this->log,
+            'body' => $this->body,
+        ];
+    }
+
+
 }
