@@ -173,6 +173,7 @@ class UserPresenter extends BasePresenter {
             $this->redirect("User:manage");
             return;
         }
+        $defaults = $defaults->toArray();
 
         unset($defaults['password']);
 

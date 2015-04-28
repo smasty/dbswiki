@@ -50,7 +50,25 @@ class AuthorManager extends BaseManager {
         if(isset($values['password'])){
             $values['password'] =  Authenticator::hash($values['password']);
         }
-        $this->db->beginTransaction();
+        $this->em->beginTransaction();
+        try {
+            $user = $this->repository->find($id);
+            if(!$user){
+                return false;
+            }
+            foreach($values as $k => $v){
+                $user->$k = $v;
+            }
+
+            $this->em->flush();
+            $this->em->commit();
+            return true;
+        } catch (Exception $e) {
+            $this->em->rollback();
+            $this->em->close();
+            return false;
+        }
+        /*$this->db->beginTransaction();
         try {
             $this->db->query("UPDATE author SET ? WHERE id = ?", $values, $id);
         } catch(Exception $e){
@@ -58,12 +76,30 @@ class AuthorManager extends BaseManager {
             return false;
         }
         $this->db->commit();
-        return true;
+        return true;*/
     }
 
 
     public function add($name, $password, $mail, $role){
-        $this->db->beginTransaction();
+        $this->em->beginTransaction();
+        try{
+            $user = new Author();
+            $user->name = $name;
+            $user->password = $password;
+            $user->mail = $mail;
+            $user->role = $role;
+            $user->joined = new \DateTime();
+
+            $this->em->persist($user);
+            $this->em->flush();
+            $this->em->commit();
+            return true;
+        } catch(Exception $e){
+            $this->em->rollback();
+            $this->em->close();
+            return false;
+        }
+        /*$this->db->beginTransaction();
         try{
             $this->db->query(
                 "INSERT INTO author (name, password, mail, joined, role) VALUES (?, ?, ?, ?, ?)",
@@ -74,12 +110,30 @@ class AuthorManager extends BaseManager {
             return false;
         }
         $this->db->commit();
-        return true;
+        return true;*/
     }
 
 
     public function delete($id, $newId){
-        $this->db->beginTransaction();
+
+        $this->em->beginTransaction();
+        try {
+            $oldAuthor = $this->repository->find($id);
+            $newAuthor = $this->repository->find($newId);
+            foreach($this->em->getRepository(Revision::class)->findByAuthor($oldAuthor) as $rev){
+                $rev->author = $newAuthor;
+                $this->em->flush();
+            }
+            $this->em->remove($oldAuthor);
+            $this->em->flush();
+            $this->em->commit();
+            return true;
+        } catch (Exception $e) {
+            $this->em->rollback();
+            $this->em->close();
+            return false;
+        }
+        /*$this->db->beginTransaction();
         try{
             $this->db->query("UPDATE revision SET author_id = ? WHERE author_id = ?", $newId, $id);
             $this->db->query("DELETE FROM author WHERE id = ?", $id);
@@ -89,7 +143,7 @@ class AuthorManager extends BaseManager {
             return false;
         }
         $this->db->commit();
-        return true;
+        return true;*/
     }
 
     public function getArticles($aid){
