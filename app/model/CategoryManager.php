@@ -47,7 +47,7 @@ class CategoryManager extends BaseManager {
 
     public function addCategory($title, $description){
 
-        $this->em->connection->beginTransaction();
+        $this->em->beginTransaction();
         try {
             $cat = new Category();
             $cat->title = $title;
@@ -55,10 +55,10 @@ class CategoryManager extends BaseManager {
 
             $this->em->persist($cat);
             $this->em->flush();
-            $this->em->connection->commit();
+            $this->em->commit();
             return true;
         } catch (Exception $e) {
-            $this->em->connection->rollback();
+            $this->em->rollback();
             $this->em->close();
             return false;
         }

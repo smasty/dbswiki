@@ -47,17 +47,26 @@ class TagManager extends BaseManager {
         return $this->repository->findPairs('id', ['title' => 'ASC'], 'title');
     }
 
-    public function createTag($tag){
-        if(trim($tag)){
-            $this->db->query("INSERT INTO tag", ['title' => trim($tag)]);
+    public function createTag($title){
+        if(trim($title)){
+            $tag = new Tag;
+            $tag->title = $title;
+            $this->em->persist($tag);
+            $this->em->flush();
+            //$this->db->query("INSERT INTO tag", ['title' => trim($tag)]);
         }
     }
 
     public function addRevisionTag($revision, $tag){
-        $this->db->query("INSERT INTO revision_tag", [
+        // TODO
+        $rev = $this->em->getRepository(Revision::class)->find($revision);
+        $tag = $this->repository->find($tag);
+        $rev->addMedia($tag);
+        $this->em->flush();
+        /*$this->db->query("INSERT INTO revision_tag", [
             'revision_id' => $revision,
             'tag_id' => $tag
-        ]);
+        ]);*/
     }
 
 

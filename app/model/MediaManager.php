@@ -5,6 +5,7 @@ namespace App\Model;
 use App\Model\Entity\Media;
 use Exception;
 use Kdyby\Doctrine\EntityManager;
+use Kdyby\GeneratedProxy\__CG__\App\Model\Entity\Revision;
 use Nette;
 
 
@@ -65,7 +66,25 @@ class MediaManager extends BaseManager {
 
         $dbPath = $this->targetPath . "/" . $fileName;
 
-        $this->db->beginTransaction();
+        $this->em->beginTransaction();
+        try{
+            $media = new Media();
+            $media->title = $title;
+            $media->type = $type;
+            $media->path = $dbPath;
+            $media->created = new \DateTime();
+
+            $this->em->persist($media);
+            $this->em->flush();
+            $this->em->commit();
+            return true;
+        } catch(Exception $e){
+            $this->em->rollBack();
+            $this->em->close();
+            return false;
+        }
+
+        /*$this->db->beginTransaction();
         try {
             $this->db->query("INSERT INTO media ", [
                 'title' => $title,
@@ -78,14 +97,19 @@ class MediaManager extends BaseManager {
             return false;
         }
         $this->db->commit();
-        return true;
+        return true;*/
     }
 
     public function addRevisionMedia($revision, $media){
-        $this->db->query("INSERT INTO revision_media", [
+        // TODO
+        $rev = $this->em->getRepository(Revision::class)->find($revision);
+        $med = $this->repository->find($media);
+        $rev->addMedia($med);
+        $this->em->flush();
+        /*$this->db->query("INSERT INTO revision_media", [
             'revision_id' => $revision,
             'media_id' => $media
-        ]);
+        ]);*/
     }
 
 }
