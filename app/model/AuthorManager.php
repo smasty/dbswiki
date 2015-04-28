@@ -68,15 +68,6 @@ class AuthorManager extends BaseManager {
             $this->em->close();
             return false;
         }
-        /*$this->db->beginTransaction();
-        try {
-            $this->db->query("UPDATE author SET ? WHERE id = ?", $values, $id);
-        } catch(Exception $e){
-            $this->db->rollBack();
-            return false;
-        }
-        $this->db->commit();
-        return true;*/
     }
 
 
@@ -99,18 +90,6 @@ class AuthorManager extends BaseManager {
             $this->em->close();
             return false;
         }
-        /*$this->db->beginTransaction();
-        try{
-            $this->db->query(
-                "INSERT INTO author (name, password, mail, joined, role) VALUES (?, ?, ?, ?, ?)",
-                $name, Authenticator::hash($password), $mail, new Nette\Utils\DateTime(), $role
-            );
-        } catch(Exception $e){
-            $this->db->rollBack();
-            return false;
-        }
-        $this->db->commit();
-        return true;*/
     }
 
 
@@ -133,17 +112,6 @@ class AuthorManager extends BaseManager {
             $this->em->close();
             return false;
         }
-        /*$this->db->beginTransaction();
-        try{
-            $this->db->query("UPDATE revision SET author_id = ? WHERE author_id = ?", $newId, $id);
-            $this->db->query("DELETE FROM author WHERE id = ?", $id);
-
-        } catch(Exception $e){
-            $this->db->rollBack();
-            return false;
-        }
-        $this->db->commit();
-        return true;*/
     }
 
     public function getArticles($aid){

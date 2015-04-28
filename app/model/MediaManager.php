@@ -83,33 +83,13 @@ class MediaManager extends BaseManager {
             $this->em->close();
             return false;
         }
-
-        /*$this->db->beginTransaction();
-        try {
-            $this->db->query("INSERT INTO media ", [
-                'title' => $title,
-                'type' => $type,
-                'path' => $dbPath,
-                'created' => new Nette\Database\SqlLiteral("NOW()")
-            ]);
-        } catch(\Exception $e){
-            $this->db->rollBack();
-            return false;
-        }
-        $this->db->commit();
-        return true;*/
     }
 
     public function addRevisionMedia($revision, $media){
-        // TODO
         $rev = $this->em->getRepository(Revision::class)->find($revision);
         $med = $this->repository->find($media);
         $rev->addMedia($med);
         $this->em->flush();
-        /*$this->db->query("INSERT INTO revision_media", [
-            'revision_id' => $revision,
-            'media_id' => $media
-        ]);*/
     }
 
 }

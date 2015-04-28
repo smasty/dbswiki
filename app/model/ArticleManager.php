@@ -3,10 +3,11 @@
 namespace App\Model;
 
 use App\Model\Entity\Article;
+use App\Model\Entity\Author;
+use App\Model\Entity\Category;
 use App\Model\Entity\Revision;
 use Kdyby\Doctrine\EntityManager;
 use Nette;
-use Nette\Database\SqlLiteral;
 
 
 /**
@@ -128,7 +129,7 @@ class ArticleManager extends BaseManager {
 
     public function addArticle($title, $body, $category, $author, array $tags, array $media){
 
-        $this->db->beginTransaction();
+        $this->em->beginTransaction();
         try {
             $aid = $this->insertArticle($title, $category);
 
@@ -153,20 +154,21 @@ class ArticleManager extends BaseManager {
             foreach($media as $m){
                 $this->mediaManager->addRevisionMedia($rid, $m);
             }
+
+            $this->em->flush();
+            $this->em->commit();
+            return $aid;
         } catch(\Exception $e){
-            $this->db->rollBack();
+            $this->em->rollback();
             return false;
         }
-
-        $this->db->commit();
-        return $aid;
 
     }
 
 
     public function editArticle($id, $title, $body, $category, $author, array $tags, $log, array $media){
 
-        $this->db->beginTransaction();
+        $this->em->beginTransaction();
         try {
             $this->updateArticle($id, $title, $category);
 
@@ -191,82 +193,110 @@ class ArticleManager extends BaseManager {
             foreach($media as $m){
                 $this->mediaManager->addRevisionMedia($rid, $m);
             }
+
+            $this->em->flush();
+            $this->em->commit();
+            return true;
         } catch(\Exception $e){
-            $this->db->rollBack();
+            $this->em->rollback();
             return false;
         }
-
-        $this->db->commit();
-        return true;
 
     }
 
 
     public function deleteArticle($id){
-        $this->db->beginTransaction();
+        $this->em->beginTransaction();
+        try {
+            $article = $this->repository->find($id);
+            $article->revision = NULL;
+            $this->em->flush();
 
-        try{
-            $revisions = array_values($this->db->fetchPairs("SELECT id FROM revision WHERE article_id = ?", $id));
-            $this->db->query("DELETE FROM revision_tag WHERE revision_id IN (?)", $revisions);
-            $this->db->query("DELETE FROM revision_media WHERE revision_id IN (?)", $revisions);
-            $this->db->query("UPDATE article SET revision_id = NULL WHERE id = ?", $id);
-            $this->db->query("DELETE FROM revision WHERE article_id = ?", $id);
-            $this->db->query("DELETE FROM article WHERE id = ?", $id);
-        } catch(\Exception $e){
-            $this->db->rollBack();
+            foreach($this->revisionRepository->findByArticle($article) as $revision){
+                foreach($revision->tags as $tag){
+                    $revision->removeTag($tag);
+                }
+                foreach($revision->medias as $media){
+                    $revision->removeMedia($media);
+                }
+                $this->em->flush();
+                $this->em->remove($revision);
+                $this->em->flush();
+            }
+            $this->em->remove($article);
+
+            $this->em->flush();
+            $this->em->commit();
+            return true;
+        } catch (\Exception $e) {
+            $this->em->rollback();
+            $this->em->close();
             return false;
         }
-
-        $this->db->commit();
-        return true;
     }
 
 
-    public function revertRevision($article, $revision){
-        $this->db->beginTransaction();
+    public function revertRevision($article_id, $revision_id){
+        $this->em->beginTransaction();
         try {
-            $testId = $this->db->fetchField("SELECT article_id FROM revision WHERE id = ?", $revision);
-            if ($testId != $article) {
+            $article = $this->repository->find($article_id);
+            $revision = $this->revisionRepository->find($revision_id);
+            if($revision->article != $article){
                 return false;
             }
-            $this->db->query("UPDATE article SET revision_id = ? WHERE id = ?", $revision, $article);
-        } catch(\Exception $e){
-            $this->db->rollBack();
+
+            $article->revision = $revision;
+
+            $this->em->flush();
+            $this->em->commit();
+            return true;
+        } catch (\Exception $e) {
+            $this->em->rollback();
+            $this->em->close();
             return false;
         }
-
-        $this->db->commit();
-        return true;
     }
 
 
-    public function setArticleRevision($article, $revision){
-        $this->db->query("UPDATE article SET revision_id = ? WHERE id = ?", $revision, $article);
+    public function setArticleRevision($article_id, $revision_id){
+        $article = $this->repository->find($article_id);
+        $revision = $this->revisionRepository->find($revision_id);
+
+        $article->revision = $revision;
+        $this->em->flush();
     }
 
     public function insertArticle($title, $category){
-        return $this->db->fetchField("INSERT INTO article ? RETURNING id", [
-            'title' => $title,
-            'created' => new SqlLiteral("NOW()"),
-            'category_id' => $category
-        ]);
+        $article = new Article();
+        $article->title = $title;
+        $article->created = new \DateTime();
+        $article->category = $this->em->getRepository(Category::class)->find($category);
+
+        $this->em->persist($article);
+        $this->em->flush();
+        return $article->id;
     }
 
     public function updateArticle($id, $title, $category){
-        return $this->db->fetchField("UPDATE article SET ? WHERE (id = ?)", [
-            'title' => $title,
-            'category_id' => $category
-        ], $id);
+        $article = $this->repository->find($id);
+        $article->title = $title;
+        $article->category = $this->em->getRepository(Category::class)->find($category);
+
+        $this->em->flush();
+        return $article->id;
     }
 
-    public function insertRevision($article, $body, $author, $log){
-        return $this->db->fetchField("INSERT INTO revision ? RETURNING id", [
-            'created' => new SqlLiteral("NOW()"),
-            'log' => $log,
-            'body' => $body,
-            'article_id' => $article,
-            'author_id' => $author
-        ]);
+    public function insertRevision($article_id, $body, $author, $log){
+        $revision = new Revision();
+        $revision->created = new \DateTime();
+        $revision->log = $log;
+        $revision->body = $body;
+        $revision->article = $this->repository->find($article_id);
+        $revision->author = $this->em->getRepository(Author::class)->find($author);
+
+        $this->em->persist($revision);
+        $this->em->flush();
+        return $revision->id;
     }
 
 }

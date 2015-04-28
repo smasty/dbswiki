@@ -2,6 +2,7 @@
 
 namespace App\Model;
 
+use App\Model\Entity\Revision;
 use App\Model\Entity\Tag;
 use Doctrine\ORM\Query\Expr\Join;
 use Kdyby\Doctrine\EntityManager;
@@ -53,20 +54,16 @@ class TagManager extends BaseManager {
             $tag->title = $title;
             $this->em->persist($tag);
             $this->em->flush();
-            //$this->db->query("INSERT INTO tag", ['title' => trim($tag)]);
+            return $tag;
         }
+        return null;
     }
 
     public function addRevisionTag($revision, $tag){
-        // TODO
         $rev = $this->em->getRepository(Revision::class)->find($revision);
         $tag = $this->repository->find($tag);
-        $rev->addMedia($tag);
+        $rev->addTag($tag);
         $this->em->flush();
-        /*$this->db->query("INSERT INTO revision_tag", [
-            'revision_id' => $revision,
-            'tag_id' => $tag
-        ]);*/
     }
 
 

@@ -3,6 +3,8 @@
 namespace App\Model\Entity;
 
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Kdyby\Doctrine\Entities\Attributes\Identifier;
 use Kdyby\Doctrine\Entities\BaseEntity;
 use Doctrine\ORM\Mapping as ORM;
@@ -11,6 +13,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Entity
  */
 class Revision extends BaseEntity{
+
 
     use Identifier;
 
@@ -44,15 +47,22 @@ class Revision extends BaseEntity{
 
     /**
      * @ORM\ManyToMany(targetEntity="Tag", inversedBy="articles")
-     * @var \Traversable
+     * @var Collection
      */
     protected $tags;
 
     /**
      * @ORM\ManyToMany(targetEntity="Media", inversedBy="articles")
-     * @var \Traversable
+     * @var Collection
      */
     protected $medias;
+
+
+
+    function __construct() {
+        $this->tags = new ArrayCollection();
+        $this->medias = new ArrayCollection();
+    }
 
 
     public function toArray(){
